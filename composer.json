@@ -13,5 +13,7 @@
             "email": "contact@danilocgsilva.me"
         }
     ],
-    "require": {}
+    "require": {
+        "danilocgsilva/class_to_sql_schema_script": "^1.7"
+    }
 }
