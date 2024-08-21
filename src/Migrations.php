@@ -3,24 +3,41 @@
 declare(strict_types=1);
 
 namespace Danilocgsilva\EndpointsCatalog\Migrations;
-use Danilocgsilva\ClassToSqlSchemaScript\DatabaseScriptSpitter;
+use Danilocgsilva\ClassToSqlSchemaScript\TableScriptSpitter;
+use Danilocgsilva\ClassToSqlSchemaScript\FieldScriptSpitter;
 
 class Migrations
 {
-    private DatabaseScriptSpitter $databaseScriptSpitter;
+    private TableScriptSpitter $tableScriptSpitter;
+
+    const TABLE_NAME = "paths";
     
     public function __construct()
     {
-        $this->databaseScriptSpitter = new DatabaseScriptSpitter();
+        $this->tableScriptSpitter = new TableScriptSpitter(self::TABLE_NAME);
     }
     
-    public function on()
+    public function getOnSql(): string
     {
+        $this->tableScriptSpitter->addField(
+            (new FieldScriptSpitter("id"))
+            ->setType("INT")
+            ->setNotNull()
+            ->setPrimaryKey()
+            ->setUnsigned()
+            ->setAutoIncrement()
+        );
 
+        $this->tableScriptSpitter->addField(
+            (new FieldScriptSpitter("path"))
+            ->setType("VARCHAR(255)")
+        );
+
+        return $this->tableScriptSpitter->getScript();
     }
 
-    public function rollback()
+    public function getRollbackSql(): string
     {
-
+        return sprintf("DROP TABLE %s;", self::TABLE_NAME);
     }
 }
