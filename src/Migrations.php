@@ -8,13 +8,28 @@ use Danilocgsilva\ClassToSqlSchemaScript\FieldScriptSpitter;
 
 class Migrations
 {
-    const TABLE_NAME = "paths";
+    const PATHS_TABLE = "paths";
+
+    const DNS_TABLE = "dns";
     
     public function getOnSql(): string
     {
         $onScript = "";
 
-        $pathsTable = new TableScriptSpitter(self::TABLE_NAME);
+        $onScript .= $this->getPathsTableScript();
+        $onScript .= $this->getDnsTableScript();
+
+        return $onScript;
+    }
+
+    public function getRollbackSql(): string
+    {
+        return sprintf("DROP TABLE %s;", self::PATHS_TABLE);
+    }
+
+    private function getPathsTableScript(): string
+    {
+        $pathsTable = new TableScriptSpitter(self::PATHS_TABLE);
         
         $pathsTable->addField(
             (new FieldScriptSpitter("id"))
@@ -30,13 +45,27 @@ class Migrations
             ->setType("VARCHAR(255)")
         );
 
-        $onScript .= $pathsTable->getScript();
-
-        return $onScript;
+        return $pathsTable->getScript();
     }
 
-    public function getRollbackSql(): string
+    private function getDnsTableScript(): string
     {
-        return sprintf("DROP TABLE %s;", self::TABLE_NAME);
+        $dnsTable = new TableScriptSpitter(self::DNS_TABLE);
+
+        $dnsTable->addField(
+            (new FieldScriptSpitter("id"))
+            ->setPrimaryKey()
+            ->setType("INT")
+            ->setNotNull()
+            ->setUnsigned()
+            ->setAutoIncrement()
+        );
+
+        $dnsTable->addField(
+            (new FieldScriptSpitter("dns"))
+            ->setType("VARCHAR(255)")
+        );
+
+        return $dnsTable->getScript();
     }
 }
