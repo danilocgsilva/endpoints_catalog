@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Danilocgsilva\EndpointsCatalog\Migrations;
 use Danilocgsilva\ClassToSqlSchemaScript\TableScriptSpitter;
 use Danilocgsilva\ClassToSqlSchemaScript\FieldScriptSpitter;
+use Danilocgsilva\ClassToSqlSchemaScript\ForeignKeyScriptSpitter;
 
 class Migrations
 {
@@ -21,6 +22,7 @@ class Migrations
         $onScript .= $this->getPathsTableScript();
         $onScript .= $this->getDnsTableScript();
         $onScript .= $this->getDnsPathScript();
+        $onScript .= $this->getForeignKeys();
 
         return $onScript;
     }
@@ -90,19 +92,36 @@ class Migrations
         );
 
         $dnsTable->addField(
-            (new FieldScriptSpitter("dbs_id"))
-            ->setType("INT")
-            ->setNotNull()
-            ->setUnsigned()
-        );
-
-        $dnsTable->addField(
             (new FieldScriptSpitter("path_id"))
             ->setType("INT")
             ->setNotNull()
             ->setUnsigned()
         );
 
+        $dnsTable->addField(
+            (new FieldScriptSpitter("dns_id"))
+            ->setType("INT")
+            ->setNotNull()
+            ->setUnsigned()
+        );
+
         return $dnsTable->getScript();
+    }
+
+    private function getForeignKeys(): string
+    {
+        $dnsPathForeign = (new ForeignKeyScriptSpitter())
+            ->setTable(self::DNS_PATH_TABLE)
+            ->setConstraintName('path_id_dns_path_foreign')
+            ->setForeignTable(self::PATHS_TABLE)
+            ->setForeignKey('id');
+
+        $dnsDnsForeign = (new ForeignKeyScriptSpitter())
+            ->setTable(self::DNS_PATH_TABLE)
+            ->setConstraintName('dns_id_dns_foreign')
+            ->setForeignTable(self::DNS_TABLE )
+            ->setForeignKey('id');
+
+        return $dnsPathForeign->getScript() . PHP_EOL . $dnsDnsForeign->getScript();
     }
 }
