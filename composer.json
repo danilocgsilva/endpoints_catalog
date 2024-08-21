@@ -1,0 +1,17 @@
+{
+    "name": "danilocgsilva/endpoints_catalog",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Danilocgsilva\\EndpointsCatalog\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Danilo Silva",
+            "email": "contact@danilocgsilva.me"
+        }
+    ],
+    "require": {}
+}
