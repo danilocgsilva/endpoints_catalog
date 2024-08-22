@@ -114,13 +114,15 @@ class Migrations
             ->setTable(self::DNS_PATH_TABLE)
             ->setConstraintName('path_id_dns_path_foreign')
             ->setForeignTable(self::PATHS_TABLE)
-            ->setForeignKey('id');
+            ->setTableForeignkey('id')
+            ->setForeignKey('path_id');
 
         $dnsDnsForeign = (new ForeignKeyScriptSpitter())
             ->setTable(self::DNS_PATH_TABLE)
             ->setConstraintName('dns_id_dns_foreign')
             ->setForeignTable(self::DNS_TABLE )
-            ->setForeignKey('id');
+            ->setTableForeignkey('id')
+            ->setForeignKey('dns_id');
 
         return $dnsPathForeign->getScript() . PHP_EOL . $dnsDnsForeign->getScript();
     }
