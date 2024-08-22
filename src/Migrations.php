@@ -3,17 +3,15 @@
 declare(strict_types=1);
 
 namespace Danilocgsilva\EndpointsCatalog;
+
 use Danilocgsilva\ClassToSqlSchemaScript\TableScriptSpitter;
 use Danilocgsilva\ClassToSqlSchemaScript\FieldScriptSpitter;
 use Danilocgsilva\ClassToSqlSchemaScript\ForeignKeyScriptSpitter;
+use Danilocgsilva\EndpointsCatalog\Models\{Path, Dns, DnsPath};
 
 class Migrations
 {
-    const PATHS_TABLE = "paths";
-
-    const DNS_TABLE = "dns";
-
-    const DNS_PATH_TABLE = "dns_path";
+    // const DNS_PATH_TABLE = "dns_path";
     
     public function getOnSql(): string
     {
@@ -21,7 +19,7 @@ class Migrations
 
         $onScript .= $this->getPathsTableScript() . PHP_EOL;
         $onScript .= $this->getDnsTableScript() . PHP_EOL;
-        $onScript .= $this->getDnsPathScript() . PHP_EOL;
+        $onScript .= $this->getDnsPathTableScript() . PHP_EOL;
         $onScript .= $this->getForeignKeys();
 
         return $onScript;
@@ -29,16 +27,16 @@ class Migrations
 
     public function getRollbackSql(): string
     {
-        $rollbackString = sprintf("DROP TABLE %s;", self::DNS_PATH_TABLE) . PHP_EOL;
-        $rollbackString .= sprintf("DROP TABLE %s;", self::DNS_TABLE) . PHP_EOL;
-        $rollbackString .= sprintf("DROP TABLE %s;", self::PATHS_TABLE);
+        $rollbackString = sprintf("DROP TABLE %s;", DnsPath::TABLENAME) . PHP_EOL;
+        $rollbackString .= sprintf("DROP TABLE %s;", Dns::TABLENAME) . PHP_EOL;
+        $rollbackString .= sprintf("DROP TABLE %s;", Path::TABLENAME);
 
         return $rollbackString;
     }
 
     private function getPathsTableScript(): string
     {
-        $pathsTable = new TableScriptSpitter(self::PATHS_TABLE);
+        $pathsTable = new TableScriptSpitter(Path::TABLENAME);
         
         $pathsTable->addField(
             (new FieldScriptSpitter("id"))
@@ -59,7 +57,7 @@ class Migrations
 
     private function getDnsTableScript(): string
     {
-        $dnsTable = new TableScriptSpitter(self::DNS_TABLE);
+        $dnsTable = new TableScriptSpitter(Dns::TABLENAME);
 
         $dnsTable->addField(
             (new FieldScriptSpitter("id"))
@@ -78,9 +76,9 @@ class Migrations
         return $dnsTable->getScript();
     }
 
-    private function getDnsPathScript(): string
+    private function getDnsPathTableScript(): string
     {
-        $dnsTable = new TableScriptSpitter(self::DNS_PATH_TABLE);
+        $dnsTable = new TableScriptSpitter(DnsPath::TABLENAME);
 
         $dnsTable->addField(
             (new FieldScriptSpitter("id"))
@@ -111,16 +109,16 @@ class Migrations
     private function getForeignKeys(): string
     {
         $dnsPathForeign = (new ForeignKeyScriptSpitter())
-            ->setTable(self::DNS_PATH_TABLE)
+            ->setTable(DnsPath::TABLENAME)
             ->setConstraintName('path_id_dns_path_foreign')
-            ->setForeignTable(self::PATHS_TABLE)
+            ->setForeignTable(Path::TABLENAME)
             ->setTableForeignkey('id')
             ->setForeignKey('path_id');
 
         $dnsDnsForeign = (new ForeignKeyScriptSpitter())
-            ->setTable(self::DNS_PATH_TABLE)
+            ->setTable(DnsPath::TABLENAME)
             ->setConstraintName('dns_id_dns_foreign')
-            ->setForeignTable(self::DNS_TABLE )
+            ->setForeignTable(Dns::TABLENAME )
             ->setTableForeignkey('id')
             ->setForeignKey('dns_id');
 
