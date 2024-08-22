@@ -19,9 +19,9 @@ class Migrations
     {
         $onScript = "";
 
-        $onScript .= $this->getPathsTableScript();
-        $onScript .= $this->getDnsTableScript();
-        $onScript .= $this->getDnsPathScript();
+        $onScript .= $this->getPathsTableScript() . PHP_EOL;
+        $onScript .= $this->getDnsTableScript() . PHP_EOL;
+        $onScript .= $this->getDnsPathScript() . PHP_EOL;
         $onScript .= $this->getForeignKeys();
 
         return $onScript;
