@@ -29,8 +29,8 @@ class Migrations
 
     public function getRollbackSql(): string
     {
-        $rollbackString = sprintf("DROP TABLE %s;", self::DNS_PATH_TABLE);
-        $rollbackString .= sprintf("DROP TABLE %s;", self::DNS_TABLE);
+        $rollbackString = sprintf("DROP TABLE %s;", self::DNS_PATH_TABLE) . PHP_EOL;
+        $rollbackString .= sprintf("DROP TABLE %s;", self::DNS_TABLE) . PHP_EOL;
         $rollbackString .= sprintf("DROP TABLE %s;", self::PATHS_TABLE);
 
         return $rollbackString;
