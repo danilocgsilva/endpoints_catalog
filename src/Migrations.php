@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Danilocgsilva\EndpointsCatalog\Migrations;
+namespace Danilocgsilva\EndpointsCatalog;
 use Danilocgsilva\ClassToSqlSchemaScript\TableScriptSpitter;
 use Danilocgsilva\ClassToSqlSchemaScript\FieldScriptSpitter;
 use Danilocgsilva\ClassToSqlSchemaScript\ForeignKeyScriptSpitter;
