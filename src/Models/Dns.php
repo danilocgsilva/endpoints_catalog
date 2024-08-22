@@ -13,4 +13,10 @@ final class Dns
     public const TABLENAME = "dns";
 
     public readonly string $dns;
+
+    public function setDns(string $dns): self
+    {
+        $this->dns = $dns;
+        return $this;
+    }
 }

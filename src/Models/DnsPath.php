@@ -15,4 +15,16 @@ final class DnsPath
     public readonly int $path_id;
 
     public readonly int $dns_id;
+
+    public function setDnsId(int $dns_id): self
+    {
+        $this->dns_id = $dns_id;
+        return $this;
+    }
+
+    public function setPathId(int $path_id): self
+    {
+        $this->path_id = $path_id;
+        return $this;
+    }
 }

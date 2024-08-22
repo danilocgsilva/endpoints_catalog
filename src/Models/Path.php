@@ -13,4 +13,10 @@ final class Path
     public const TABLENAME = "paths";
 
     public readonly string $path;
+
+    public function setPath(string $path): self
+    {
+        $this->path = $path;
+        return $this;
+    }
 }
