@@ -6,7 +6,7 @@ namespace Danilocgsilva\EndpointsCatalog\Models;
 
 use Danilocgsilva\EndpointsCatalog\Pattern\TraitModel;
 
-final class Path
+final class Path implements ModelsInterface
 {
     use TraitModel;
     

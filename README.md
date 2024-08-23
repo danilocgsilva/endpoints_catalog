@@ -1,0 +1,6 @@
+For repository tests, which requires a real database connection, use this variables:
+
+* DB_ENDPOINTSCATALOG_HOST_TEST
+* DB_ENDPOINTSCATALOG_NAME_TEST
+* DB_ENDPOINTSCATALOG_USER_TEST
+* DB_ENDPOINTSCATALOG_PASSWORD_TEST

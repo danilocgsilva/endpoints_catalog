@@ -7,6 +7,11 @@
             "Danilocgsilva\\EndpointsCatalog\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Danilo Silva",
@@ -15,5 +20,8 @@
     ],
     "require": {
         "danilocgsilva/class_to_sql_schema_script": "^1.7"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.3"
     }
 }

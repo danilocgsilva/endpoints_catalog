@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Danilocgsilva\EndpointsCatalog\Repositories;
 
-use Danilocgsilva\EndpointsCatalog\Pattern\TraitModel;
 use PDO;
 use Danilocgsilva\EndpointsCatalog\Models\Path;
+use Danilocgsilva\EndpointsCatalog\Models\ModelsInterface;
+use Danilocgsilva\EndpointsCatalog\Repositories\Interfaces\BaseRepositoryInterface;
 
-class PathRepository extends AbstractRepository implements RepositoryInterface
+class PathRepository extends AbstractRepository implements BaseRepositoryInterface
 {
     public const MODEL = Path::class;
 
-    public function save(TraitModel $model): void
+    public function save(ModelsInterface $model): void
     {
         $this->pdo->prepare(
             sprintf("INSERT INTO %s (path) VALUES (:path)", self::MODEL::TABLENAME)
@@ -21,7 +22,7 @@ class PathRepository extends AbstractRepository implements RepositoryInterface
         ]);
     }
 
-    public function get(int $id): TraitModel
+    public function get(int $id): ModelsInterface
     {
         $preResults = $this->pdo->prepare(
             sprintf("SELECT path FROM %s WHERE id = :id;", self::MODEL::TABLENAME)
@@ -33,7 +34,7 @@ class PathRepository extends AbstractRepository implements RepositoryInterface
             ->setPath($fetchedData[0]);
     }
 
-    public function replace(int $id, TraitModel $model): void
+    public function replace(int $id, ModelsInterface $model): void
     {
         $query = sprintf(
             "UPDATE %s SET path = :path WHERE id = :id;",
@@ -48,11 +49,26 @@ class PathRepository extends AbstractRepository implements RepositoryInterface
 
     public function delete(int $id): void
     {
-
+        $this->pdo->prepare(
+            sprintf("DELETE FROM %s WHERE id = :id", self::MODEL::TABLENAME)
+        )->execute();
     }
 
     public function list(): array
     {
+        $query = sprintf(
+            "SELECT %s FROM %s;",
+            "path",
+            self::MODEL::TABLENAME
+        );
 
+        $preResults = $this->pdo->prepare($query);
+        $preResults->setFetchMode(PDO::FETCH_NUM);
+        $preResults->execute();
+        $dnsRepositoryList = [];
+        while ($row = $preResults->fetch()) {
+            $dnsRepositoryList[] = (new Path())->setPath($row[0]);
+        }
+        return $dnsRepositoryList; 
     }
 }
