@@ -11,8 +11,6 @@ use Danilocgsilva\EndpointsCatalog\Models\{Path, Dns, DnsPath};
 
 class Migrations
 {
-    // const DNS_PATH_TABLE = "dns_path";
-    
     public function getOnSql(): string
     {
         $onScript = "";

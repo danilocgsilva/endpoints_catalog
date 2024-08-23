@@ -15,8 +15,11 @@ class DnsPathRepository extends AbstractRepository implements RepositoryInterfac
     public function save(TraitModel $model): void
     {
         $this->pdo->prepare(
-            sprintf("INSERT INTO %s (path_id, dns_id) VALUES (:path_id, :dns_id)", $model->path_id, $model->dns_id)
-        )->execute();
+            sprintf("INSERT INTO %s (path_id, dns_id) VALUES (:path_id, :dns_id)", self::MODEL::TABLENAME)
+        )->execute([
+            ':path_id' => $model->path_id,
+            ':dns_id' => $model->dns_id
+        ]);
     }
 
     public function get(int $id): TraitModel

@@ -15,8 +15,10 @@ class DnsRepository extends AbstractRepository implements RepositoryInterface
     public function save(TraitModel $model): void
     {
         $this->pdo->prepare(
-            sprintf("INSERT INTO %s (dns) VALUES (:dns)", $model->dns)
-        )->execute();
+            sprintf("INSERT INTO %s (dns) VALUES (:dns)", self::MODEL::TABLENAME)
+        )->execute([
+            ':dns' => $model->dns
+        ]);
     }
 
     public function get(int $id): TraitModel
@@ -34,12 +36,12 @@ class DnsRepository extends AbstractRepository implements RepositoryInterface
     public function replace(int $id, TraitModel $model): void
     {
         $query = sprintf(
-            "UPDATE %s SET dns_id = :dns_id WHERE id = :id;",
+            "UPDATE %s SET dns = :dns WHERE id = :id;",
             self::MODEL::TABLENAME
         );
 
         $this->pdo->prepare($query)->execute([
-            ':dns_id' => $model->dns_id,
+            ':dns' => $model->dns,
             ':id' => $id
         ]);
     }
