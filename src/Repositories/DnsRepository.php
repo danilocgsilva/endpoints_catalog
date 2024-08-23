@@ -4,15 +4,22 @@ declare(strict_types=1);
 
 namespace Danilocgsilva\EndpointsCatalog\Repositories;
 
-use Danilocgsilva\EndpointsCatalog\Pattern\TraitModel;
 use Danilocgsilva\EndpointsCatalog\Models\Dns;
 use PDO;
+use Danilocgsilva\EndpointsCatalog\Repositories\Interfaces\BaseRepositoryInterface;
 
-class DnsRepository extends AbstractRepository implements RepositoryInterface
+/**
+ * @template-implements BaseRepositoryInterface<Dns>
+ */
+class DnsRepository extends AbstractRepository implements BaseRepositoryInterface
 {
     public const MODEL = Dns::class;
 
-    public function save(TraitModel $model): void
+    /**
+     * @param Dns $model
+     * @return void
+     */
+    public function save($model): void
     {
         $this->pdo->prepare(
             sprintf("INSERT INTO %s (dns) VALUES (:dns)", self::MODEL::TABLENAME)
@@ -21,7 +28,7 @@ class DnsRepository extends AbstractRepository implements RepositoryInterface
         ]);
     }
 
-    public function get(int $id): TraitModel
+    public function get(int $id): Dns
     {
         $preResults = $this->pdo->prepare(
             sprintf("SELECT dns FROM %s WHERE id = :id;", self::MODEL::TABLENAME)
@@ -33,7 +40,7 @@ class DnsRepository extends AbstractRepository implements RepositoryInterface
             ->setDns($fetchedData[0]);
     }
 
-    public function replace(int $id, TraitModel $model): void
+    public function replace(int $id, $model): void
     {
         $query = sprintf(
             "UPDATE %s SET dns = :dns WHERE id = :id;",
@@ -53,11 +60,14 @@ class DnsRepository extends AbstractRepository implements RepositoryInterface
         )->execute([":id" => $id]);
     }
 
+    /**
+     * @return array<Dns>
+     */
     public function list(): array
     {
         $query = sprintf(
-            "SELECT id, %s FROM %s;",
-            "dns_id",
+            "SELECT %s FROM %s;",
+            "dns",
             self::MODEL::TABLENAME
         );
 
@@ -66,7 +76,7 @@ class DnsRepository extends AbstractRepository implements RepositoryInterface
         $preResults->execute();
         $dnsRepositoryList = [];
         while ($row = $preResults->fetch()) {
-            $dnsRepositoryList[] = (new Dns())->setDns($row[1]);
+            $dnsRepositoryList[] = (new Dns())->setDns($row[0]);
         }
         return $dnsRepositoryList; 
     }

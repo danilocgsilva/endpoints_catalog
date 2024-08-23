@@ -4,17 +4,34 @@ declare(strict_types=1);
 
 namespace Danilocgsilva\EndpointsCatalog\Repositories\Interfaces;
 
-use Danilocgsilva\EndpointsCatalog\Models\ModelsInterface;
-
+/**
+ * @template T
+ */
 interface BaseRepositoryInterface
 {
-    public function save(ModelsInterface $model): void;
+    /**
+     * @param T $model
+     * @return void
+     */
+    public function save($model): void;
 
-    public function get(int $id): ModelsInterface;
+    /**
+     * @param int $id
+     * @return T
+     */
+    public function get(int $id);
 
-    public function replace(int $id, ModelsInterface $model): void;
+    /**
+     * @param int $id
+     * @param T $model
+     * @return void
+     */
+    public function replace(int $id, $model): void;
 
     public function delete(int $id): void;
 
+    /**
+     * @return array<T>
+     */
     public function list(): array;
 }

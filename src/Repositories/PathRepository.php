@@ -6,14 +6,20 @@ namespace Danilocgsilva\EndpointsCatalog\Repositories;
 
 use PDO;
 use Danilocgsilva\EndpointsCatalog\Models\Path;
-use Danilocgsilva\EndpointsCatalog\Models\ModelsInterface;
 use Danilocgsilva\EndpointsCatalog\Repositories\Interfaces\BaseRepositoryInterface;
 
+/**
+ * @template-implements BaseRepositoryInterface<Path>
+ */
 class PathRepository extends AbstractRepository implements BaseRepositoryInterface
 {
     public const MODEL = Path::class;
 
-    public function save(ModelsInterface $model): void
+    /**
+     * @param Path $model
+     * @return void
+     */
+    public function save($model): void
     {
         $this->pdo->prepare(
             sprintf("INSERT INTO %s (path) VALUES (:path)", self::MODEL::TABLENAME)
@@ -22,7 +28,11 @@ class PathRepository extends AbstractRepository implements BaseRepositoryInterfa
         ]);
     }
 
-    public function get(int $id): ModelsInterface
+    /**
+     * @param int $id
+     * @return \Danilocgsilva\EndpointsCatalog\Models\Path
+     */
+    public function get(int $id): Path
     {
         $preResults = $this->pdo->prepare(
             sprintf("SELECT `path` FROM %s WHERE id = :id;", self::MODEL::TABLENAME)
@@ -34,7 +44,12 @@ class PathRepository extends AbstractRepository implements BaseRepositoryInterfa
             ->setPath($fetchedData[0]);
     }
 
-    public function replace(int $id, ModelsInterface $model): void
+    /**
+     * @param int $id
+     * @param Path $model
+     * @return void
+     */
+    public function replace(int $id, $model): void
     {
         $query = sprintf(
             "UPDATE %s SET path = :path WHERE id = :id;",
