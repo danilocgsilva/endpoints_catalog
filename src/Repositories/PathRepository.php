@@ -25,7 +25,7 @@ class PathRepository extends AbstractRepository implements BaseRepositoryInterfa
     public function get(int $id): ModelsInterface
     {
         $preResults = $this->pdo->prepare(
-            sprintf("SELECT path FROM %s WHERE id = :id;", self::MODEL::TABLENAME)
+            sprintf("SELECT `path` FROM %s WHERE id = :id;", self::MODEL::TABLENAME)
         );
         $preResults->setFetchMode(PDO::FETCH_NUM);
         $preResults->execute([':id' => $id]);
@@ -51,7 +51,7 @@ class PathRepository extends AbstractRepository implements BaseRepositoryInterfa
     {
         $this->pdo->prepare(
             sprintf("DELETE FROM %s WHERE id = :id", self::MODEL::TABLENAME)
-        )->execute();
+        )->execute([':id' => $id]);
     }
 
     public function list(): array

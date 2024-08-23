@@ -50,7 +50,7 @@ class DnsRepository extends AbstractRepository implements RepositoryInterface
     {
         $this->pdo->prepare(
             sprintf("DELETE FROM %s WHERE id = :id", self::MODEL::TABLENAME)
-        )->execute();
+        )->execute([":id" => $id]);
     }
 
     public function list(): array

@@ -37,7 +37,7 @@ class Utils
 
     public function cleanTable(string $tableName): void
     {
-        $query = sprintf("DELETE FROM %s;", $tableName);
+        $query = sprintf("DELETE FROM %s; ALTER TABLE %s AUTO_INCREMENT = 1;", $tableName, $tableName);
         $this->pdo->prepare($query)->execute();
     }
 
