@@ -14,9 +14,17 @@ final class Dns
 
     public readonly string $dns;
 
+    public readonly string $port;
+
     public function setDns(string $dns): self
     {
         $this->dns = $dns;
+        return $this;
+    }
+
+    public function setPort(string $port): self
+    {
+        $this->port = $port;
         return $this;
     }
 }

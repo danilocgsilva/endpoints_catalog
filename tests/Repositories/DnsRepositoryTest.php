@@ -105,6 +105,40 @@ class DnsRepositoryTest extends TestCase
         $this->assertCount(2, $listOfDns);
     }
 
+    public function testGetBothProperties(): void
+    {
+        $this->cleanTables();
+
+        $this->dbUtils->fillTable('dns', [
+            ["dns" => "leftington.com", "port" => "82"],
+        ]);
+
+        $recoveredPath = $this->repository->get(1);
+
+        $this->assertSame("82", $recoveredPath->port);
+        $this->assertSame("leftington.com", $recoveredPath->dns);
+    }
+
+    public function testListAndProperties(): void
+    {
+        $this->cleanTables();
+
+        $this->dbUtils->fillTable('dns', [
+            ["dns" => "leftington.com", "port" => "82"],
+            ["dns" => "coojle.com", "port" => "8080"]
+        ]);
+
+        /**
+         * @var array<Dns> $recoveredDns
+         */
+        $recoveredDns = $this->repository->list();
+
+        $this->assertSame("leftington.com", $recoveredDns[0]->dns);
+        $this->assertSame("82", $recoveredDns[0]->port);
+        $this->assertSame("coojle.com", $recoveredDns[1]->dns);
+        $this->assertSame("8080", $recoveredDns[1]->port);
+    }
+
     private function cleanTables(): void
     {
         $this->dbUtils->cleanTable('dns_path');

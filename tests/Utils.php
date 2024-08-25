@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Danilocgsilva\EndpointsCatalog\Migrations;
 use PDO;
 
 class Utils
@@ -57,5 +58,23 @@ class Utils
             $statement = $this->pdo->prepare($query);
             $statement->execute(array_combine($placeholders, $entriesRecords));
         }
+    }
+
+    public function migrate(): void
+    {
+        $migrations = new Migrations();
+        
+        $this->pdo->prepare(
+            $migrations->getOnSql()
+        )->execute();
+    }
+
+    public function migrateRollback(): void
+    {
+        $migrations = new Migrations();
+        
+        $this->pdo->prepare(
+            $migrations->getRollbackSql()
+        )->execute();
     }
 }

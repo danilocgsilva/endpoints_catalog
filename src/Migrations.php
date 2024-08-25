@@ -71,6 +71,11 @@ class Migrations
             ->setType("VARCHAR(255)")
         );
 
+        $dnsTable->addField(
+            (new FieldScriptSpitter("port"))
+            ->setType("CHAR(5)")
+        );
+
         return $dnsTable->getScript();
     }
 
