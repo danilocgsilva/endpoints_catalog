@@ -12,9 +12,17 @@ final class Dns
     
     public const TABLENAME = "dns";
 
+    public readonly int $id;
+
     public readonly string $dns;
 
     public readonly string $port;
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
 
     public function setDns(string $dns): self
     {

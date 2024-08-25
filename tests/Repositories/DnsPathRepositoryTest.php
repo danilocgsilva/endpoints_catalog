@@ -7,7 +7,9 @@ namespace Tests\Repositories;
 use Danilocgsilva\EndpointsCatalog\Repositories\DnsPathRepository;
 use PHPUnit\Framework\TestCase;
 use Tests\Utils;
-use Danilocgsilva\EndpointsCatalog\Models\DnsPath;
+use Danilocgsilva\EndpointsCatalog\Models\{
+    DnsPath, Path, Dns
+};
 use Danilocgsilva\EndpointsCatalog\Repositories\Interfaces\BaseRepositoryInterface;
 
 class DnsPathRepositoryTest extends TestCase
@@ -104,6 +106,7 @@ class DnsPathRepositoryTest extends TestCase
     {
         $this->cleanTables();
         $this->fillDnsAndPathTables();
+
         $this->dbUtils->fillTable('dns', [
             ["dns" => "myowndns.com"]
         ]);
@@ -118,12 +121,31 @@ class DnsPathRepositoryTest extends TestCase
                 "dns_id" => 2
             ]
         ]);
+
         $this->assertSame(2, $this->dbUtils->getTableCount('dns_path'));
-        /**
-         * @var array<DnsPath> $listOfDnsPath
-         */
+        /** @var array<DnsPath> $listOfDnsPath */
         $listOfDnsPath = $this->repository->list();
         $this->assertCount(2, $listOfDnsPath);
+    }
+
+    public function testSaveEndpoint(): void
+    {
+        $this->cleanTables();
+        $this->fillDnsAndPathTables();
+        $this->assertSame(0, $this->dbUtils->getTableCount('dns_path'));
+
+        $this->dbUtils->getPathRepository()->saveAndAssingId(
+            ($pathModel = new Path())
+            ->setPath("/my/groceries")
+        );
+
+        $this->dbUtils->getDnsRepository()->saveAndAssingId(
+            ($dnsModel = new Dns())
+            ->setDns("rubens.com.br")
+        );
+
+        $this->repository->saveEndpoint($dnsModel, $pathModel);
+        $this->assertSame(1, $this->dbUtils->getTableCount('dns_path'));
     }
 
     private function cleanTables(): void

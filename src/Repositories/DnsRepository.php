@@ -16,16 +16,30 @@ class DnsRepository extends AbstractRepository implements BaseRepositoryInterfac
     public const MODEL = Dns::class;
 
     /**
-     * @param Dns $model
+     * @param Dns $dnsModel
      * @return void
      */
-    public function save($model): void
+    public function save($dnsModel): void
     {
         $this->pdo->prepare(
             sprintf("INSERT INTO %s (dns) VALUES (:dns)", self::MODEL::TABLENAME)
         )->execute([
-            ':dns' => $model->dns
+            ':dns' => $dnsModel->dns
         ]);
+    }
+
+    /**
+     * @param Dns $dnsModel
+     * @return void
+     */
+    public function saveAndAssingId($dnsModel): void
+    {
+        $this->save($dnsModel);
+        $preResults = $this->pdo->prepare("SELECT LAST_INSERT_ID();");
+        $preResults->execute();
+        $dnsModel->setId(
+            $preResults->fetch(PDO::FETCH_NUM)[0]
+        );
     }
 
     public function get(int $id): Dns

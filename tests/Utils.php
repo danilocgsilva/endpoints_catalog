@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests;
 
 use Danilocgsilva\EndpointsCatalog\Migrations;
+use Danilocgsilva\EndpointsCatalog\Repositories\DnsRepository;
+use Danilocgsilva\EndpointsCatalog\Repositories\PathRepository;
 use PDO;
 
 class Utils
@@ -72,9 +74,19 @@ class Utils
     public function migrateRollback(): void
     {
         $migrations = new Migrations();
-        
+
         $this->pdo->prepare(
             $migrations->getRollbackSql()
         )->execute();
+    }
+
+    public function getPathRepository(): PathRepository
+    {
+        return new PathRepository($this->pdo);
+    }
+
+    public function getDnsRepository(): DnsRepository
+    {
+        return new DnsRepository($this->pdo);
     }
 }

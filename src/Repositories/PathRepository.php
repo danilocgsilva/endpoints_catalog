@@ -16,16 +16,30 @@ class PathRepository extends AbstractRepository implements BaseRepositoryInterfa
     public const MODEL = Path::class;
 
     /**
-     * @param Path $model
+     * @param Path $pathModel
      * @return void
      */
-    public function save($model): void
+    public function save($pathModel): void
     {
         $this->pdo->prepare(
             sprintf("INSERT INTO %s (path) VALUES (:path)", self::MODEL::TABLENAME)
         )->execute([
-            ':path' => $model->path
+            ':path' => $pathModel->path
         ]);
+    }
+
+    /**
+     * @param Path $pathModel
+     * @return void
+     */
+    public function saveAndAssingId($pathModel): void
+    {
+        $this->save($pathModel);
+        $preResults = $this->pdo->prepare("SELECT LAST_INSERT_ID();");
+        $preResults->execute();
+        $pathModel->setId(
+            $preResults->fetch(PDO::FETCH_NUM)[0]
+        );
     }
 
     /**

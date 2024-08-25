@@ -7,6 +7,7 @@ namespace Danilocgsilva\EndpointsCatalog\Repositories;
 use Danilocgsilva\EndpointsCatalog\Models\DnsPath;
 use PDO;
 use Danilocgsilva\EndpointsCatalog\Repositories\Interfaces\BaseRepositoryInterface;
+use Danilocgsilva\EndpointsCatalog\Models\{Path, Dns};
 
 /**
  * @template-implements BaseRepositoryInterface<DnsPath>
@@ -14,7 +15,19 @@ use Danilocgsilva\EndpointsCatalog\Repositories\Interfaces\BaseRepositoryInterfa
 class DnsPathRepository extends AbstractRepository implements BaseRepositoryInterface
 {
     public const MODEL = DnsPath::class;
+
+    public function saveEndpoint(Dns $dns, Path $path)
+    {
+        $dnsPath = new DnsPath();
+        $dnsPath->setDnsId($dns->id);
+        $dnsPath->setPathId($path->id);
+        $this->save($dnsPath);
+    }
     
+    /**
+     * @param DnsPath $model
+     * @return void
+     */
     public function save($model): void
     {
         $this->pdo->prepare(
