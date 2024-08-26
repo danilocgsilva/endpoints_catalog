@@ -49,13 +49,14 @@ class PathRepository extends AbstractRepository implements BaseRepositoryInterfa
     public function get(int $id): Path
     {
         $preResults = $this->pdo->prepare(
-            sprintf("SELECT `path` FROM %s WHERE id = :id;", self::MODEL::TABLENAME)
+            sprintf("SELECT `id`, `path` FROM %s WHERE id = :id;", self::MODEL::TABLENAME)
         );
         $preResults->setFetchMode(PDO::FETCH_NUM);
         $preResults->execute([':id' => $id]);
         $fetchedData = $preResults->fetch();
         return (new Path())
-            ->setPath($fetchedData[0]);
+            ->setId($fetchedData[0])
+            ->setPath($fetchedData[1]);
     }
 
     /**
@@ -86,7 +87,7 @@ class PathRepository extends AbstractRepository implements BaseRepositoryInterfa
     public function list(): array
     {
         $query = sprintf(
-            "SELECT %s FROM %s;",
+            "SELECT id, %s FROM %s;",
             "path",
             self::MODEL::TABLENAME
         );
@@ -96,7 +97,7 @@ class PathRepository extends AbstractRepository implements BaseRepositoryInterfa
         $preResults->execute();
         $dnsRepositoryList = [];
         while ($row = $preResults->fetch()) {
-            $dnsRepositoryList[] = (new Path())->setPath($row[0]);
+            $dnsRepositoryList[] = (new Path())->setId($row[0])->setPath($row[1]);
         }
         return $dnsRepositoryList; 
     }

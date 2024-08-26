@@ -45,7 +45,7 @@ class DnsRepository extends AbstractRepository implements BaseRepositoryInterfac
     public function get(int $id): Dns
     {
         $preResults = $this->pdo->prepare(
-            sprintf("SELECT dns, port FROM %s WHERE id = :id;", self::MODEL::TABLENAME)
+            sprintf("SELECT id, dns, port FROM %s WHERE id = :id;", self::MODEL::TABLENAME)
         );
         $preResults->setFetchMode(PDO::FETCH_NUM);
         $preResults->execute([
@@ -53,9 +53,9 @@ class DnsRepository extends AbstractRepository implements BaseRepositoryInterfac
         ]);
         $fetchedData = $preResults->fetch();
 
-        $fetchedDns = (new Dns())->setDns($fetchedData[0]);
-        if ($fetchedData[1]) {
-            $fetchedDns->setPort($fetchedData[1]);
+        $fetchedDns = (new Dns())->setId($fetchedData[0])->setDns($fetchedData[1]);
+        if ($fetchedData[2]) {
+            $fetchedDns->setPort($fetchedData[2]);
         }
 
         return $fetchedDns;
@@ -87,7 +87,7 @@ class DnsRepository extends AbstractRepository implements BaseRepositoryInterfac
     public function list(): array
     {
         $query = sprintf(
-            "SELECT %s, %s FROM %s;",
+            "SELECT id, %s, %s FROM %s;",
             "dns",
             "port",
             self::MODEL::TABLENAME
@@ -98,9 +98,9 @@ class DnsRepository extends AbstractRepository implements BaseRepositoryInterfac
         $preResults->execute();
         $dnsRepositoryList = [];
         while ($row = $preResults->fetch()) {
-            $fetchedDns = (new Dns())->setDns($row[0]);
-            if ($row[1]) {
-                $fetchedDns->setPort($row[1]);
+            $fetchedDns = (new Dns())->setId($row[0])->setDns($row[1]);
+            if ($row[2]) {
+                $fetchedDns->setPort($row[2]);
             }
             $dnsRepositoryList[] = $fetchedDns;
         }

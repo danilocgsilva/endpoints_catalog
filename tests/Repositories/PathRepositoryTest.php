@@ -53,6 +53,7 @@ class PathRepositoryTest extends TestCase
 
         $recoveredPath = $this->repository->get(1);
         $this->assertSame("another/path", $recoveredPath->path);
+        $this->assertSame(1, $recoveredPath->id);
     }
 
     public function testReplace(): void
@@ -99,6 +100,8 @@ class PathRepositoryTest extends TestCase
         $this->assertSame(2, $this->dbUtils->getTableCount('paths'));
         $listOfPaths = $this->repository->list();
         $this->assertCount(2, $listOfPaths);
+        $this->assertSame(1, $listOfPaths[0]->id);
+        $this->assertSame(2, $listOfPaths[1]->id);
     }
 
     private function cleanTables(): void
