@@ -10,4 +10,9 @@ class MigrationManager
     {
         return "Danilocgsilva\EndpointsCatalog\Migrations\Apply\M02_MetaTable";
     }
+
+    public function getPreviouseMigrationClass(): string
+    {
+        return "Danilocgsilva\EndpointsCatalog\Migrations\Rollback\M02_MetaTableRollback";
+    }
 }
