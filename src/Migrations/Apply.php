@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Danilocgsilva\EndpointsCatalog;
+namespace Danilocgsilva\EndpointsCatalog\Migrations;
 
 use Danilocgsilva\ClassToSqlSchemaScript\TableScriptSpitter;
 use Danilocgsilva\ClassToSqlSchemaScript\FieldScriptSpitter;
 use Danilocgsilva\ClassToSqlSchemaScript\ForeignKeyScriptSpitter;
 use Danilocgsilva\EndpointsCatalog\Models\{Path, Dns, DnsPath};
 
-class Migrations
+class Apply
 {
-    public function getOnSql(): string
+    public function getString(): string
     {
         $onScript = "";
 
@@ -21,15 +21,6 @@ class Migrations
         $onScript .= $this->getForeignKeys();
 
         return $onScript;
-    }
-
-    public function getRollbackSql(): string
-    {
-        $rollbackString = sprintf("DROP TABLE %s;", DnsPath::TABLENAME) . PHP_EOL;
-        $rollbackString .= sprintf("DROP TABLE %s;", Dns::TABLENAME) . PHP_EOL;
-        $rollbackString .= sprintf("DROP TABLE %s;", Path::TABLENAME);
-
-        return $rollbackString;
     }
 
     private function getPathsTableScript(): string
