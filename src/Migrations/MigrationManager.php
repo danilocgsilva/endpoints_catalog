@@ -9,23 +9,28 @@ use PDOException;
 
 class MigrationManager
 {
+    public function __construct(private PDO $pdo) {}
+    
     public function getNextMigrationClass(): string
     {
+        if (!$this->hasTable('dns_path')) {
+            return "Danilocgsilva\EndpointsCatalog\Migrations\Apply\M01_Apply";    
+        }
         return "Danilocgsilva\EndpointsCatalog\Migrations\Apply\M02_MetaTable";
     }
 
     public function getPreviouseMigrationClass(PDO $pdo): string
     {
-        if ($this->hasTable('migrations', $pdo)) {
+        if ($this->hasTable('migrations')) {
             return "Danilocgsilva\EndpointsCatalog\Migrations\Rollback\M02_MetaTableRollback";
         }
         return "Danilocgsilva\EndpointsCatalog\Migrations\Rollback\M01_Rollback";
     }
 
-    private function hasTable(string $table, PDO $pdo)
+    private function hasTable(string $table)
     {
         try {
-            $pdo->query("SELECT 1 FROM {$table} LIMIT 1");
+            $this->pdo->query("SELECT 1 FROM {$table} LIMIT 1");
         } catch (PDOException $e) {
             return false;
         }
