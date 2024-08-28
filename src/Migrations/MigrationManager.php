@@ -16,7 +16,13 @@ class MigrationManager
         if (!$this->hasTable('dns_path')) {
             return "Danilocgsilva\EndpointsCatalog\Migrations\Apply\M01_Apply";    
         }
-        return "Danilocgsilva\EndpointsCatalog\Migrations\Apply\M02_MetaTable";
+        if (
+            $this->hasTable('dns_path') &&
+            !$this->hasTable('migrations')
+        ) {
+            return "Danilocgsilva\EndpointsCatalog\Migrations\Apply\M02_MetaTable";
+        }
+        return "";
     }
 
     public function getPreviouseMigrationClass(PDO $pdo): string
