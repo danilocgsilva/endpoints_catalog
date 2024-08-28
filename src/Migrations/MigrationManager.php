@@ -31,7 +31,10 @@ class MigrationManager
         if ($this->hasTable('migrations')) {
             return "Danilocgsilva\EndpointsCatalog\Migrations\Rollback\M02_MetaTableRollback";
         }
-        return "Danilocgsilva\EndpointsCatalog\Migrations\Rollback\M01_Rollback";
+        if ($this->hasTable('dns_path')) {
+            return "Danilocgsilva\EndpointsCatalog\Migrations\Rollback\M01_Rollback";
+        }
+        throw new NoMigrationsLeftException();
     }
 
     private function hasTable(string $table)
