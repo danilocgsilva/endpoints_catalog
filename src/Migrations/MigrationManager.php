@@ -6,6 +6,7 @@ namespace Danilocgsilva\EndpointsCatalog\Migrations;
 
 use PDO;
 use PDOException;
+use Danilocgsilva\EndpointsCatalog\NoMigrationsLeftException;
 
 class MigrationManager
 {
@@ -22,7 +23,7 @@ class MigrationManager
         ) {
             return "Danilocgsilva\EndpointsCatalog\Migrations\Apply\M02_MetaTable";
         }
-        return "";
+        throw new NoMigrationsLeftException();
     }
 
     public function getPreviouseMigrationClass(PDO $pdo): string
