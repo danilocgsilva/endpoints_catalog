@@ -12,6 +12,10 @@ class MigrationManager
 {
     public function __construct(private PDO $pdo) {}
     
+    /**
+     * @throws \Danilocgsilva\EndpointsCatalog\NoMigrationsLeftException
+     * @return string
+     */
     public function getNextMigrationClass(): string
     {
         if (!$this->hasTable('dns_path')) {
@@ -24,8 +28,13 @@ class MigrationManager
             return "Danilocgsilva\EndpointsCatalog\Migrations\Apply\M02_MetaTable";
         }
         throw new NoMigrationsLeftException();
+
     }
 
+    /**
+     * @throws \Danilocgsilva\EndpointsCatalog\NoMigrationsLeftException
+     * @return string
+     */
     public function getPreviouseMigrationClass(): string
     {
         if ($this->hasTable('migrations')) {
