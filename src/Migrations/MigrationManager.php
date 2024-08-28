@@ -26,7 +26,7 @@ class MigrationManager
         throw new NoMigrationsLeftException();
     }
 
-    public function getPreviouseMigrationClass(PDO $pdo): string
+    public function getPreviouseMigrationClass(): string
     {
         if ($this->hasTable('migrations')) {
             return "Danilocgsilva\EndpointsCatalog\Migrations\Rollback\M02_MetaTableRollback";
