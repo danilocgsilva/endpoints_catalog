@@ -12,3 +12,7 @@ For repository tests, which requires a real database connection, use this variab
 * DB_ENDPOINTSCATALOG_NAME_TEST
 * DB_ENDPOINTSCATALOG_USER_TEST
 * DB_ENDPOINTSCATALOG_PASSWORD_TEST
+
+## Patterns
+
+A simple and efective Model > Migration patterns. Look to the MigrationManager, which is required in case of having differents database versions schema. If the project can existis with just one migration version, no MigrationManager is required.
