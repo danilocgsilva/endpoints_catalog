@@ -16,3 +16,5 @@ For repository tests, which requires a real database connection, use this variab
 ## Patterns
 
 A simple and efective Model > Migration patterns. Look to the MigrationManager, which is required in case of having differents database versions schema. If the project can existis with just one migration version, no MigrationManager is required.
+
+Also there have a nice database manipulations to manage data for testing the repositories, without using repositories itself.
