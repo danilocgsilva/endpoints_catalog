@@ -28,7 +28,6 @@ class MigrationManager
             return "Danilocgsilva\EndpointsCatalog\Migrations\Apply\M02_MetaTable";
         }
         throw new NoMigrationsLeftException();
-
     }
 
     /**
