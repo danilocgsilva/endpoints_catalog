@@ -97,20 +97,22 @@ class DnsRepository extends AbstractRepository implements BaseRepositoryInterfac
     public function list(): array
     {
         $query = sprintf(
-            "SELECT id, %s, %s FROM %s;",
-            "dns",
-            "port",
+            "SELECT `id`, `dns`, `port`, `description` FROM %s;",
             self::MODEL::TABLENAME
         );
 
         $preResults = $this->pdo->prepare($query);
-        $preResults->setFetchMode(PDO::FETCH_NUM);
+        $preResults->setFetchMode(PDO::FETCH_ASSOC);
         $preResults->execute();
         $dnsRepositoryList = [];
         while ($row = $preResults->fetch()) {
-            $fetchedDns = (new Dns())->setId($row[0])->setDns($row[1]);
-            if ($row[2]) {
-                $fetchedDns->setPort($row[2]);
+            extract($row);
+            $fetchedDns = (new Dns())->setId($id)->setDns($dns);
+            if ($port) {
+                $fetchedDns->setPort($port);
+            }
+            if ($description) {
+                $fetchedDns->setDescription($description);
             }
             $dnsRepositoryList[] = $fetchedDns;
         }
