@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Danilocgsilva\EndpointsCatalog\Migrations;
+namespace Danilocgsilva\EndpointsCatalog\Migrations\Rollback;
 
 use Danilocgsilva\EndpointsCatalog\Models\{Path, Dns, DnsPath};
+use Danilocgsilva\EndpointsCatalog\Migrations\MigrationInterface;
 
-class Rollback
+class M01_Rollback implements MigrationInterface
 {
     public function getString(): string
     {

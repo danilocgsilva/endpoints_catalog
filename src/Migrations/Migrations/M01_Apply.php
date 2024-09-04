@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Danilocgsilva\EndpointsCatalog\Migrations;
+namespace Danilocgsilva\EndpointsCatalog\Migrations\Migrations;
 
 use Danilocgsilva\ClassToSqlSchemaScript\TableScriptSpitter;
 use Danilocgsilva\ClassToSqlSchemaScript\FieldScriptSpitter;
@@ -10,7 +10,7 @@ use Danilocgsilva\ClassToSqlSchemaScript\ForeignKeyScriptSpitter;
 use Danilocgsilva\EndpointsCatalog\Models\{Path, Dns, DnsPath};
 use Danilocgsilva\EndpointsCatalog\Migrations\MigrationInterface;
 
-class Apply implements MigrationInterface
+class M01_Apply implements MigrationInterface
 {
     public function getString(): string
     {
@@ -22,6 +22,15 @@ class Apply implements MigrationInterface
         $onScript .= $this->getForeignKeys();
 
         return $onScript;
+    }
+
+    public function getRollbackString(): string
+    {
+        $rollbackString = sprintf("DROP TABLE %s;", DnsPath::TABLENAME) . PHP_EOL;
+        $rollbackString .= sprintf("DROP TABLE %s;", Dns::TABLENAME) . PHP_EOL;
+        $rollbackString .= sprintf("DROP TABLE %s;", Path::TABLENAME);
+
+        return $rollbackString;
     }
 
     private function getPathsTableScript(): string
