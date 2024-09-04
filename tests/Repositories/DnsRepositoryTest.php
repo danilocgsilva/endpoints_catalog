@@ -57,6 +57,21 @@ class DnsRepositoryTest extends TestCase
         $this->assertSame("hookle.com", $recoveredPath->dns);
     }
 
+    public function testDescriptionTest(): void
+    {
+        $this->cleanTables();
+        $this->dbUtils->fillTable('dns', [
+            [
+                "dns" => "doofle.com",
+                "description" => "The doofle domain"
+            ]
+        ]);
+        $this->assertSame(1, $this->dbUtils->getTableCount('dns'));
+        $recoveredPath = $this->repository->get(1);
+        $this->assertSame("doofle.com", $recoveredPath->dns);
+        $this->assertSame("The doofle domain", $recoveredPath->description);
+    }
+
     public function testReplace(): void
     {
         $this->cleanTables();
@@ -73,6 +88,21 @@ class DnsRepositoryTest extends TestCase
         $recoveredAfterReplace = $this->repository->get(1);
 
         $this->assertSame("hoople.com", $recoveredAfterReplace->dns);
+    }
+
+    public function testDescriptionReplace(): void
+    {
+        $this->cleanTables();
+        $this->dbUtils->fillTable('dns', [
+            [
+                "dns" => "dookle.com"
+            ]
+        ]);
+        $toReplacePath = (new Dns())->setDns("hooples.com")->setDescription("Hoople domain");
+        $this->repository->replace(1, $toReplacePath);
+        $recoveredAfterReplace = $this->repository->get(1);
+        $this->assertSame("hooples.com", $recoveredAfterReplace->dns);
+        $this->assertSame("Hoople domain", $recoveredAfterReplace->description);
     }
 
     public function testDelete(): void

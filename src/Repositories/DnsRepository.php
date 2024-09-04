@@ -73,13 +73,14 @@ class DnsRepository extends AbstractRepository implements BaseRepositoryInterfac
     public function replace(int $id, $model): void
     {
         $query = sprintf(
-            "UPDATE %s SET dns = :dns WHERE id = :id;",
+            "UPDATE %s SET dns = :dns, description = :description WHERE id = :id;",
             self::MODEL::TABLENAME
         );
 
         $this->pdo->prepare($query)->execute([
             ':dns' => $model->dns,
-            ':id' => $id
+            ':id' => $id,
+            ':description' => $model->description ?? null
         ]);
     }
 
