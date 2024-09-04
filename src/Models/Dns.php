@@ -16,6 +16,8 @@ final class Dns
 
     public readonly string $dns;
 
+    public readonly string $description;
+
     public readonly string $port;
 
     public function setId(int $id): self
@@ -33,6 +35,12 @@ final class Dns
     public function setPort(string $port): self
     {
         $this->port = $port;
+        return $this;
+    }
+
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
         return $this;
     }
 }

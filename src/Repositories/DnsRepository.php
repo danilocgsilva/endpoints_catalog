@@ -22,9 +22,10 @@ class DnsRepository extends AbstractRepository implements BaseRepositoryInterfac
     public function save($dnsModel): void
     {
         $this->pdo->prepare(
-            sprintf("INSERT INTO %s (dns) VALUES (:dns)", self::MODEL::TABLENAME)
+            sprintf("INSERT INTO %s (dns, `description`) VALUES (:dns, :description)", self::MODEL::TABLENAME)
         )->execute([
-            ':dns' => $dnsModel->dns
+            ':dns' => $dnsModel->dns,
+            ':description' => $dnsModel->description ?? ""
         ]);
     }
 
@@ -45,17 +46,25 @@ class DnsRepository extends AbstractRepository implements BaseRepositoryInterfac
     public function get(int $id): Dns
     {
         $preResults = $this->pdo->prepare(
-            sprintf("SELECT id, dns, port FROM %s WHERE id = :id;", self::MODEL::TABLENAME)
+            sprintf("SELECT `id`, `dns`, `port`, `description` FROM %s WHERE id = :id;", self::MODEL::TABLENAME)
         );
-        $preResults->setFetchMode(PDO::FETCH_NUM);
+        $preResults->setFetchMode(PDO::FETCH_ASSOC);
         $preResults->execute([
             ':id' => $id
         ]);
         $fetchedData = $preResults->fetch();
+        extract($fetchedData);
 
-        $fetchedDns = (new Dns())->setId($fetchedData[0])->setDns($fetchedData[1]);
-        if ($fetchedData[2]) {
-            $fetchedDns->setPort($fetchedData[2]);
+        $fetchedDns = (new Dns())
+            ->setId($id)
+            ->setDns($dns);
+
+        if ($description) {
+            $fetchedDns->setDescription($description);
+        }
+        
+        if ($port) {
+            $fetchedDns->setPort($port);
         }
 
         return $fetchedDns;

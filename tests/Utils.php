@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Tests;
 
 use Danilocgsilva\EndpointsCatalog\Migrations\Rollback;
-use Danilocgsilva\EndpointsCatalog\Migrations\Apply;
+use Danilocgsilva\EndpointsCatalog\Migrations\Apply\M01_Apply;
 use Danilocgsilva\EndpointsCatalog\Repositories\DnsRepository;
 use Danilocgsilva\EndpointsCatalog\Repositories\PathRepository;
+use Danilocgsilva\EndpointsCatalog\Migrations\Apply\M03_AddDescriptionDns;
 use PDO;
 
 class Utils
@@ -65,10 +66,11 @@ class Utils
 
     public function migrate(): void
     {
-        $migrations = new Apply();
+        $migrations = new M01_Apply();
+        $mDescription = new M03_AddDescriptionDns();
         
         $this->pdo->prepare(
-            $migrations->getString()
+            $migrations->getString() . $mDescription->getString()
         )->execute();
     }
 
