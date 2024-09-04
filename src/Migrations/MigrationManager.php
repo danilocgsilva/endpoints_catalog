@@ -78,9 +78,10 @@ class MigrationManager
         $preResults->execute([
             ':databasename' => $databaseName,
             ':dns' => 'dns',
+            ':column_name' => 'description'
         ]);
 
         $row = $preResults->fetch();
-        return $row === null ? true : false;
+        return $row === false ? true : false;
     }
 }
