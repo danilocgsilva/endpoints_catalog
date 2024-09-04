@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Danilocgsilva\EndpointsCatalog\Migrations\Apply;
+namespace Danilocgsilva\EndpointsCatalog\Migrations;
 
 use Danilocgsilva\ClassToSqlSchemaScript\TableScriptSpitter;
 use Danilocgsilva\ClassToSqlSchemaScript\FieldScriptSpitter;
@@ -10,7 +10,7 @@ use Danilocgsilva\ClassToSqlSchemaScript\ForeignKeyScriptSpitter;
 use Danilocgsilva\EndpointsCatalog\Models\{Path, Dns, DnsPath};
 use Danilocgsilva\EndpointsCatalog\Migrations\MigrationInterface;
 
-class M01_Apply implements MigrationInterface
+class Apply implements MigrationInterface
 {
     public function getString(): string
     {
@@ -39,7 +39,7 @@ class M01_Apply implements MigrationInterface
 
         $pathsTable->addField(
             (new FieldScriptSpitter("path"))
-            ->setType("VARCHAR(255)")
+                ->setType("VARCHAR(255)")
         );
 
         return $pathsTable->getScript();
@@ -60,12 +60,17 @@ class M01_Apply implements MigrationInterface
 
         $dnsTable->addField(
             (new FieldScriptSpitter("dns"))
-            ->setType("VARCHAR(255)")
+                ->setType("VARCHAR(255)")
         );
 
         $dnsTable->addField(
             (new FieldScriptSpitter("port"))
-            ->setType("CHAR(5)")
+                ->setType("CHAR(5)")
+        );
+
+        $dnsTable->addField(
+            (new FieldScriptSpitter("description"))
+                ->setType("VARCHAR(255)")
         );
 
         return $dnsTable->getScript();

@@ -8,7 +8,7 @@ use Danilocgsilva\EndpointsCatalog\Migrations\Rollback;
 use Danilocgsilva\EndpointsCatalog\Migrations\Apply\M01_Apply;
 use Danilocgsilva\EndpointsCatalog\Repositories\DnsRepository;
 use Danilocgsilva\EndpointsCatalog\Repositories\PathRepository;
-use Danilocgsilva\EndpointsCatalog\Migrations\Apply\M03_AddDescriptionDns;
+use Danilocgsilva\EndpointsCatalog\Migrations\Apply;
 use PDO;
 
 class Utils
@@ -66,11 +66,10 @@ class Utils
 
     public function migrate(): void
     {
-        $migrations = new M01_Apply();
-        $mDescription = new M03_AddDescriptionDns();
+        $migrations = new Apply();
         
         $this->pdo->prepare(
-            $migrations->getString() . $mDescription->getString()
+            $migrations->getString()
         )->execute();
     }
 
