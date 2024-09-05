@@ -25,7 +25,7 @@ class M02_Platforms implements MigrationInterface
 
     public function getRollbackString(): string
     {
-        $removeForeignKeyScript = sprintf("ALTER TABLE %s DROP FOREIGN KEY %s", Dns::TABLENAME, 'dns_platform_id_constraint');
+        $removeForeignKeyScript = sprintf("ALTER TABLE %s DROP FOREIGN KEY %s;", Dns::TABLENAME, 'dns_platform_id_constraint');
         $removeNewColumn = sprintf("ALTER TABLE %s DROP %s;", Dns::TABLENAME, 'platform_id');
         $removeTableScript = sprintf("DROP TABLE %s;", Platform::TABLENAME);
 
@@ -60,7 +60,6 @@ class M02_Platforms implements MigrationInterface
         return (new AlterTableScriptSpitter(Dns::TABLENAME))
             ->setNewColumn("platform_id")
             ->setType("INT")
-            ->setNotNull()
             ->setUnsigned()
             ->getScript();
     }
