@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Danilocgsilva\EndpointsCatalog\Migrations\Migrations;
 
+use Danilocgsilva\ClassToSqlSchemaScript\AlterTableScriptSpitter;
 use Danilocgsilva\ClassToSqlSchemaScript\FieldScriptSpitter;
 use Danilocgsilva\ClassToSqlSchemaScript\ForeignKeyScriptSpitter;
 use Danilocgsilva\ClassToSqlSchemaScript\TableScriptSpitter;
@@ -24,7 +25,11 @@ class M02_Platforms implements MigrationInterface
 
     public function getRollbackString(): string
     {
-        return sprintf("DROP TABLE %s;", Platform::TABLENAME);
+        $removeForeignKeyScript = sprintf("ALTER TABLE %s DROP FOREIGN KEY %s", Dns::TABLENAME, 'dns_platform_id_constraint');
+        $removeNewColumn = sprintf("ALTER TABLE %s DROP %s;", Dns::TABLENAME, 'platform_id');
+        $removeTableScript = sprintf("DROP TABLE %s;", Platform::TABLENAME);
+
+        return $removeForeignKeyScript . PHP_EOL . $removeNewColumn . PHP_EOL . $removeTableScript;
     }
 
     private function getNewTableString(): string
@@ -52,7 +57,12 @@ class M02_Platforms implements MigrationInterface
 
     private function alterDnsTable(): string
     {
-        return sprintf("ALTER TABLE %s ADD COLUMN platform_id INT NOT NULL UNSIGNED;", Dns::TABLENAME);
+        return (new AlterTableScriptSpitter(Dns::TABLENAME))
+            ->setNewColumn("platform_id")
+            ->setType("INT")
+            ->setNotNull()
+            ->setUnsigned()
+            ->getScript();
     }
 
     private function addForeignKeyToDns(): string
