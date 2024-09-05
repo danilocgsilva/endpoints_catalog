@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Danilocgsilva\EndpointsCatalog\Migrations;
 
-use Danilocgsilva\EndpointsCatalog\Migrations\Migrations\M02_Platforms;
+use Danilocgsilva\EndpointsCatalog\Migrations\Migrations\{M01_Apply, M02_Platforms};
 use Danilocgsilva\EndpointsCatalog\Models\{Path, Dns, DnsPath};
 use PDO;
 
@@ -12,12 +12,17 @@ class Manager
 {
     public function __construct(private string $databaseName, private PDO $pdo) {}
     
-    private function getNextMigration(): string
+    public function getNextMigration(): MigrationInterface
     {
         if ($this->haveTablesFirstMigration()) {
-            return M02_Platforms::class;
+            return new M02_Platforms();
         }
         throw new NoMigrationsLeftException();
+    }
+
+    public function getPreviousMigration(): MigrationInterface
+    {
+        return new M01_Apply();
     }
 
     private function haveTablesFirstMigration(): bool
