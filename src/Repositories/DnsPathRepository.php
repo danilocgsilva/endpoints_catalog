@@ -76,6 +76,23 @@ class DnsPathRepository extends AbstractRepository implements BaseRepositoryInte
         }
     }
 
+    public function findByDnsIdAndPathId(int $dnsId, int $pathId): DnsPath
+    {
+        $query = sprintf("SELECT id, path_id, dns_id FROM %s WHERE path_id = :path_id AND dns_id = :dns_id;", self::MODEL::TABLENAME);
+        $preResults = $this->pdo->prepare($query);
+        $preResults->execute([
+            ':path_id' => $dnsId,
+            ':dns_id' => $pathId
+        ]);
+        $preResults->setFetchMode(PDO::FETCH_ASSOC);
+        $row = $preResults->fetch();
+
+        return (new DnsPath())
+            ->setId($row['id'])
+            ->setDnsId($row['dns_id'])
+            ->setPathId($row['path_id']);
+    }
+    
     public function delete(int $id): void
     {
         $this->pdo->prepare(
