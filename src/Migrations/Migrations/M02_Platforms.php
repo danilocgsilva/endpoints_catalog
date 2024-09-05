@@ -33,4 +33,9 @@ class M02_Platforms implements MigrationInterface
             )
             ->getScript();
     }
+
+    public function getRollbackString(): string
+    {
+        return sprintf("DROP TABLE %s;", Platform::TABLENAME);
+    }
 }
