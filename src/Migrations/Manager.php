@@ -18,6 +18,10 @@ class Manager
     
     public function __construct(private string $databaseName, private PDO $pdo) {}
     
+    /**
+     * @throws \Danilocgsilva\EndpointsCatalog\Migrations\NoMigrationsLeftException
+     * @return \Danilocgsilva\EndpointsCatalog\Migrations\MigrationInterface
+     */
     public function getNextMigration(): MigrationInterface
     {
         if ($this->haveTablesFirstMigration()) {
@@ -28,9 +32,22 @@ class Manager
         throw new NoMigrationsLeftException();
     }
 
+    /**
+     * @throws \Danilocgsilva\EndpointsCatalog\Migrations\NoMigrationsLeftException
+     * @return \Danilocgsilva\EndpointsCatalog\Migrations\MigrationInterface
+     */
     public function getPreviousMigration(): MigrationInterface
     {
-        return new M01_Apply();
+        // Last migrations check must be checked first than the previous migrations check.
+        if (in_array(Platform::TABLENAME, $this->listTables())) {
+            return new M02_Platforms();
+        }
+
+        if ($this->haveTablesFirstMigration()) {
+            return new M01_Apply();
+        }
+
+        throw new NoMigrationsLeftException();
     }
 
     private function haveTablesFirstMigration(): bool
