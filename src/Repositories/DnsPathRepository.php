@@ -16,7 +16,12 @@ class DnsPathRepository extends AbstractRepository implements BaseRepositoryInte
 {
     public const MODEL = DnsPath::class;
 
-    public function saveEndpoint(Dns $dns, Path $path)
+    /**
+     * @param \Danilocgsilva\EndpointsCatalog\Models\Dns $dns
+     * @param \Danilocgsilva\EndpointsCatalog\Models\Path $path
+     * @return void
+     */
+    public function saveEndpoint(Dns $dns, Path $path): void
     {
         $dnsPath = new DnsPath();
         $dnsPath->setDnsId($dns->id);
@@ -38,6 +43,10 @@ class DnsPathRepository extends AbstractRepository implements BaseRepositoryInte
         ]);
     }
 
+    /**
+     * @param int $id
+     * @return \Danilocgsilva\EndpointsCatalog\Models\DnsPath
+     */
     public function get(int $id): DnsPath
     {
         $preResults = $this->pdo->prepare(sprintf("SELECT path_id, dns_id FROM %s WHERE id = :id;", self::MODEL::TABLENAME));
@@ -76,13 +85,18 @@ class DnsPathRepository extends AbstractRepository implements BaseRepositoryInte
         }
     }
 
+    /**
+     * @param int $dnsId
+     * @param int $pathId
+     * @return \Danilocgsilva\EndpointsCatalog\Models\DnsPath
+     */
     public function findByDnsIdAndPathId(int $dnsId, int $pathId): DnsPath
     {
         $query = sprintf("SELECT id, path_id, dns_id FROM %s WHERE path_id = :path_id AND dns_id = :dns_id;", self::MODEL::TABLENAME);
         $preResults = $this->pdo->prepare($query);
         $preResults->execute([
-            ':path_id' => $dnsId,
-            ':dns_id' => $pathId
+            ':path_id' => $pathId,
+            ':dns_id' => $dnsId
         ]);
         $preResults->setFetchMode(PDO::FETCH_ASSOC);
         $row = $preResults->fetch();
@@ -93,6 +107,10 @@ class DnsPathRepository extends AbstractRepository implements BaseRepositoryInte
             ->setPathId($row['path_id']);
     }
     
+    /**
+     * @param int $id
+     * @return void
+     */
     public function delete(int $id): void
     {
         $this->pdo->prepare(
@@ -100,6 +118,9 @@ class DnsPathRepository extends AbstractRepository implements BaseRepositoryInte
         )->execute([":id" => $id]);
     }
 
+    /**
+     * @return array<DnsPath>
+     */
     public function list(): array
     {
         $query = sprintf(
