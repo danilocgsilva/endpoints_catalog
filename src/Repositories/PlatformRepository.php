@@ -105,6 +105,10 @@ class PlatformRepository extends AbstractRepository implements BaseRepositoryInt
         $this->pdo->prepare($query)->execute($placeholdersArray);
     }
 
+    /**
+     * @param int $id
+     * @return void
+     */
     public function delete(int $id): void
     {
         $this->pdo->prepare(
@@ -112,6 +116,9 @@ class PlatformRepository extends AbstractRepository implements BaseRepositoryInt
         )->execute([':id' => $id]);
     }
 
+    /**
+     * @return array<Platform>
+     */
     public function list(): array
     {
         $query = sprintf(
