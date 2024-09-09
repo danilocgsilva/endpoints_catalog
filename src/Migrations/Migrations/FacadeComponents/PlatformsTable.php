@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Danilocgsilva\EndpointsCatalog\Migrations\Migrations;
+namespace Danilocgsilva\EndpointsCatalog\Migrations\Migrations\FacadeComponents;
 
-use Danilocgsilva\ClassToSqlSchemaScript\AlterTableScriptSpitter;
-use Danilocgsilva\ClassToSqlSchemaScript\FieldScriptSpitter;
-use Danilocgsilva\ClassToSqlSchemaScript\ForeignKeyScriptSpitter;
-use Danilocgsilva\ClassToSqlSchemaScript\TableScriptSpitter;
 use Danilocgsilva\EndpointsCatalog\Migrations\MigrationInterface;
-use Danilocgsilva\EndpointsCatalog\Models\Dns;
+use Danilocgsilva\ClassToSqlSchemaScript\TableScriptSpitter;
+use Danilocgsilva\ClassToSqlSchemaScript\FieldScriptSpitter;
 use Danilocgsilva\EndpointsCatalog\Models\Platform;
+use Danilocgsilva\ClassToSqlSchemaScript\AlterTableScriptSpitter;
+use Danilocgsilva\ClassToSqlSchemaScript\ForeignKeyScriptSpitter;
+use Danilocgsilva\EndpointsCatalog\Models\Dns;
 
-class M02_Platforms implements MigrationInterface
+class PlatformsTable implements MigrationInterface
 {
     public function getString(): string
     {
@@ -20,7 +20,11 @@ class M02_Platforms implements MigrationInterface
         $alterDnsString = $this->alterDnsTable();
         $foreignKey = $this->addForeignKeyToDns();
 
-        return $newPlatformTableString . PHP_EOL . $alterDnsString . PHP_EOL . $foreignKey;
+        return $newPlatformTableString . 
+            PHP_EOL . 
+            $alterDnsString . 
+            PHP_EOL . 
+            $foreignKey;
     }
 
     public function getRollbackString(): string
@@ -31,7 +35,7 @@ class M02_Platforms implements MigrationInterface
 
         return $removeForeignKeyScript . PHP_EOL . $removeNewColumn . PHP_EOL . $removeTableScript;
     }
-
+    
     private function getNewTableString(): string
     {
         return (new TableScriptSpitter(Platform::TABLENAME))

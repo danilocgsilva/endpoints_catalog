@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Danilocgsilva\EndpointsCatalog\Migrations;
 
-use Danilocgsilva\EndpointsCatalog\Migrations\Migrations\{M01_Apply, M02_Platforms};
+use Danilocgsilva\EndpointsCatalog\Migrations\Migrations\M01_Apply, Danilocgsilva\EndpointsCatalog\Migrations\Migrations\M02_PlatformsPayload;
 use Danilocgsilva\EndpointsCatalog\Models\{Path, Dns, DnsPath};
 use Danilocgsilva\EndpointsCatalog\Models\Platform;
 use PDO;
@@ -27,7 +27,7 @@ class Manager
     public function getNextMigration(): MigrationInterface
     {
         if ($this->haveNextMigration()) {
-            return new M02_Platforms();
+            return new M02_PlatformsPayload();
         }
         throw new NoMigrationsLeftException();
     }
@@ -53,7 +53,7 @@ class Manager
     {
         // Last migrations check must be checked first than the previous migrations check.
         if (in_array(Platform::TABLENAME, $this->listTables())) {
-            return new M02_Platforms();
+            return new M02_PlatformsPayload();
         }
 
         if ($this->haveTablesFirstMigration()) {
