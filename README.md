@@ -4,7 +4,7 @@ An *endpoint* is a compounding of a *dns* and a *path*.
 
 We have the `Dns` and `Path` model to represent each one of those types. And have `DnsPath` model with represents the compound of both.
 
-A *platform model* means an application. Those may exists in different environments: local development, testing, homologation and production. So several dns can belongs to a same platform. This means, if you assign a path to a dns, probably, or depending on the level of your software park development, all the others dns, belongs to the same platform, may have as well this same path.
+A *platform model* means an application. Those may exists in different environments: local development, testing, homologation and production, just for example. So several dns can belongs to a same platform. This means, if you assign a path to a dns, probably, or depending on the level of your software park development, all the others dns, belongs to the same platform, may have this same path as well.
 
 # Testing
 

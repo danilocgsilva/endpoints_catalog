@@ -16,6 +16,8 @@ class Manager
      */
     private array $tables;
     
+    private bool $isHaveNextMigration;
+    
     public function __construct(private string $databaseName, private PDO $pdo) {}
     
     /**
@@ -24,12 +26,23 @@ class Manager
      */
     public function getNextMigration(): MigrationInterface
     {
-        if ($this->haveTablesFirstMigration()) {
-            if (!in_array(Platform::TABLENAME, $this->tables)) {
-                return new M02_Platforms();
-            }
+        if ($this->haveNextMigration()) {
+            return new M02_Platforms();
         }
         throw new NoMigrationsLeftException();
+    }
+
+    public function haveNextMigration(): bool
+    {
+        if (!isset($this->isHaveNextMigration)) {
+            if ($this->haveTablesFirstMigration()) {
+                if (!in_array(Platform::TABLENAME, $this->tables)) {
+                    $this->isHaveNextMigration = true;
+                }
+            }
+            $this->isHaveNextMigration = false;
+        }
+        return $this->isHaveNextMigration;
     }
 
     /**

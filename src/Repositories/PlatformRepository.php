@@ -36,8 +36,8 @@ class PlatformRepository extends AbstractRepository implements BaseRepositoryInt
         $this->pdo->prepare(
             sprintf(
                 "INSERT INTO %s (%s) VALUES (%s)",
-                $fieldsSection,
                 self::MODEL::TABLENAME,
+                $fieldsSection,
                 $valuesSection
             )
         )->execute($placeholdersArray);

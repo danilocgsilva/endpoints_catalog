@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Tests\Repositories;
 
 use Danilocgsilva\EndpointsCatalog\Repositories\PlatformRepository;
+use Exception;
 use PHPUnit\Framework\TestCase;
+use Danilocgsilva\EndpointsCatalog\Migrations\NoMigrationsLeftException;
 use Tests\Utils;
 use Danilocgsilva\EndpointsCatalog\Models\Platform;
 use Danilocgsilva\EndpointsCatalog\Repositories\Interfaces\BaseRepositoryInterface;
+use Danilocgsilva\EndpointsCatalog\Migrations\Manager;
 
 class PlatformRepositoryTest extends TestCase
 {
@@ -23,6 +26,12 @@ class PlatformRepositoryTest extends TestCase
     {
         parent::__construct($name);
         $this->dbUtils = new Utils();
+
+        $migrationManager = new Manager($this->dbUtils->getDatabaseName(), $this->dbUtils->getPdo());
+        if ($migrationManager->haveNextMigration()) {
+            $migration = $migrationManager->getNextMigration();
+            $this->dbUtils->migrate($migration);
+        }
     }
 
     public function setUp(): void
@@ -30,12 +39,12 @@ class PlatformRepositoryTest extends TestCase
         $this->platformRepository = new PlatformRepository($this->dbUtils->getPdo());
     }
 
-    public function testSave(): void
+    public function testSimpleSave(): void
     {
         $platformName = "Business drive";
+        $this->cleanTables();
         
         $this->assertSame(0, $this->dbUtils->getTableCount('platforms'));
-        $this->fillDnsAndPathTables();
         
         $platform = new Platform();
         $platform->setName($platformName);
@@ -78,87 +87,49 @@ class PlatformRepositoryTest extends TestCase
     public function testReplace(): void
     {
         $this->cleanTables();
-        $this->fillDnsAndPathTables();
-        $this->dbUtils->fillTable('dns', [
-            ["dns" => "myowndns.com"]
+        $this->dbUtils->fillTable('platforms', [
+            ["name" => "Drivers platform"]
         ]);
 
-        $this->dbUtils->fillTable('dns_path', [
-            [
-                "path_id" => 1,
-                "dns_id" => 1
-            ]
-        ]);
+        $toReplacePlatform = (new Platform())->setName("Buses platform");
+        $this->platformRepository->replace(1, $toReplacePlatform);
 
-        $toReplacePath = (new DnsPath())->setDnsId(2);
-        $this->repository->replace(1, $toReplacePath);
+        $recoveredAfterReplace = $this->platformRepository->get(1);
 
-        $recoveredAfterReplace = $this->repository->get(1);
-
-        $this->assertSame(2, $recoveredAfterReplace->dns_id);
+        $this->assertSame("Buses platform", $recoveredAfterReplace->name);
     }
 
     public function testDelete(): void
     {
         $this->cleanTables();
-        $this->fillDnsAndPathTables();
 
-        $this->dbUtils->fillTable('dns_path', [
+        $this->dbUtils->fillTable('platforms', [
             [
-                "path_id" => 1,
-                "dns_id" => 1
+                "name" => "Drivers platform"
             ]
         ]);
 
-        $this->assertSame(1, $this->dbUtils->getTableCount('dns_path'));
-        $this->repository->delete(1);
-        $this->assertSame(0, $this->dbUtils->getTableCount('dns_path'));
+        $this->assertSame(1, $this->dbUtils->getTableCount('platforms'));
+        $this->platformRepository->delete(1);
+        $this->assertSame(0, $this->dbUtils->getTableCount('platforms'));
     }
 
     public function testList(): void
     {
         $this->cleanTables();
-        $this->fillDnsAndPathTables();
 
-        $this->dbUtils->fillTable('dns', [
-            ["dns" => "myowndns.com"]
+        $this->dbUtils->fillTable('platforms', [
+            ["name" => "Drivers platform"],
+            ["name" => "Motorcycles platform"],
         ]);
 
-        $this->dbUtils->fillTable('dns_path', [
-            [
-                "path_id" => 1,
-                "dns_id" => 1
-            ],
-            [
-                "path_id" => 1,
-                "dns_id" => 2
-            ]
-        ]);
+        $this->assertSame(2, $this->dbUtils->getTableCount('platforms'));
+        /** @var array<Platform> $listOfPlatforms */
+        $listOfPlatforms = $this->platformRepository->list();
+        $this->assertCount(2, $listOfPlatforms);
 
-        $this->assertSame(2, $this->dbUtils->getTableCount('dns_path'));
-        /** @var array<DnsPath> $listOfDnsPath */
-        $listOfDnsPath = $this->repository->list();
-        $this->assertCount(2, $listOfDnsPath);
-    }
-
-    public function testSaveEndpoint(): void
-    {
-        $this->cleanTables();
-        $this->fillDnsAndPathTables();
-        $this->assertSame(0, $this->dbUtils->getTableCount('dns_path'));
-
-        $this->dbUtils->getPathRepository()->saveAndAssingId(
-            ($pathModel = new Path())
-            ->setPath("/my/groceries")
-        );
-
-        $this->dbUtils->getDnsRepository()->saveAndAssingId(
-            ($dnsModel = new Dns())
-            ->setDns("rubens.com.br")
-        );
-
-        $this->repository->saveEndpoint($dnsModel, $pathModel);
-        $this->assertSame(1, $this->dbUtils->getTableCount('dns_path'));
+        $firstPlatform = $listOfPlatforms[0];
+        $this->assertSame("Drivers platform", $firstPlatform->name);
     }
 
     private function cleanTables(): void

@@ -4,26 +4,33 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Danilocgsilva\EndpointsCatalog\Migrations\Rollback;
-use Danilocgsilva\EndpointsCatalog\Migrations\Apply\M01_Apply;
 use Danilocgsilva\EndpointsCatalog\Repositories\DnsRepository;
 use Danilocgsilva\EndpointsCatalog\Repositories\PathRepository;
-use Danilocgsilva\EndpointsCatalog\Migrations\Apply;
+use Danilocgsilva\EndpointsCatalog\Migrations\MigrationInterface;
 use PDO;
 
 class Utils
 {
     private PDO $pdo;
+
+    private string $databaseName;
     
     public function __construct()
     {
+        $this->databaseName = getenv('DB_ENDPOINTSCATALOG_NAME_TEST');
+        
         $this->pdo = new PDO(
             sprintf(
-                "mysql:host=%s;dbname=%s", getenv('DB_ENDPOINTSCATALOG_HOST_TEST'), getenv('DB_ENDPOINTSCATALOG_NAME_TEST')
+                "mysql:host=%s;dbname=%s", getenv('DB_ENDPOINTSCATALOG_HOST_TEST'), $this->databaseName
             ),
             getenv('DB_ENDPOINTSCATALOG_USER_TEST'),
             getenv('DB_ENDPOINTSCATALOG_PASSWORD_TEST')
         );
+    }
+
+    public function getDatabaseName(): string
+    {
+        return $this->databaseName;
     }
 
     public function getPdo(): PDO
@@ -64,19 +71,15 @@ class Utils
         }
     }
 
-    public function migrate(): void
+    public function migrate(MigrationInterface $migrations): void
     {
-        $migrations = new Apply();
-        
         $this->pdo->prepare(
             $migrations->getString()
         )->execute();
     }
 
-    public function migrateRollback(): void
+    public function migrateRollback(MigrationInterface $migrations): void
     {
-        $migrations = new Rollback();
-
         $this->pdo->prepare(
             $migrations->getString()
         )->execute();
