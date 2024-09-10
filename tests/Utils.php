@@ -81,7 +81,7 @@ class Utils
     public function migrateRollback(MigrationInterface $migrations): void
     {
         $this->pdo->prepare(
-            $migrations->getString()
+            $migrations->getRollbackString()
         )->execute();
     }
 

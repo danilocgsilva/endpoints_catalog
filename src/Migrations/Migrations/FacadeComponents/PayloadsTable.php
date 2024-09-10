@@ -6,6 +6,7 @@ namespace Danilocgsilva\EndpointsCatalog\Migrations\Migrations\FacadeComponents;
 
 use Danilocgsilva\ClassToSqlSchemaScript\ForeignKeyScriptSpitter;
 use Danilocgsilva\EndpointsCatalog\Migrations\MigrationInterface;
+use Danilocgsilva\EndpointsCatalog\Migrations\NoMigrationsLeftException;
 use Danilocgsilva\EndpointsCatalog\Models\Payload;
 use Danilocgsilva\EndpointsCatalog\Models\Path;
 use Danilocgsilva\ClassToSqlSchemaScript\TableScriptSpitter;
@@ -20,11 +21,43 @@ class PayloadsTable implements MigrationInterface
 
     public function getRollbackString(): string
     {
-        $dropForeignKey = sprintf("ALTER TABLE %s DROP FOREIGN KEY %s;", Payload::TABLENAME, "path_id_path_constraint");
-        
-        $dropTableScript = sprintf("DROP TABLE %s;", Payload::TABLENAME);
+        // $queryForeign = sprintf("IF EXISTS(SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = (SELECT DATABASE()) AND table_name = '%s') THEN " . PHP_EOL, Payload::TABLENAME);
+        // $queryForeign .= sprintf("ALTER TABLE %s DROP FOREIGN KEY '%s';", Payload::TABLENAME, 'path_id_path_constraint') . PHP_EOL;
+        // $queryForeign .= sprintf("DROP TABLE '%s';", Payload::TABLENAME) . PHP_EOL;
+        // $queryForeign .= "END IF;" . PHP_EOL;
 
-        return $dropForeignKey . PHP_EOL . $dropTableScript;
+        // $queryForeign = 'SELECT CASE ' . PHP_EOL;
+        // $queryForeign .= 'WHEN EXISTS (' . PHP_EOL;
+        // $queryForeign .= 'SELECT 1 ' . PHP_EOL;
+        // $queryForeign .= 'FROM INFORMATION_SCHEMA.TABLES ' . PHP_EOL;
+        // $queryForeign .= 'WHERE table_schema = (SELECT DATABASE()) ' . PHP_EOL;
+        // $queryForeign .= sprintf('AND TABLE_NAME = \'%s\'' . PHP_EOL, Payload::TABLENAME);
+        // $queryForeign .= ')' . PHP_EOL;
+        // $queryForeign .= 'THEN ' . PHP_EOL;
+        // $queryForeign .= sprintf("ALTER TABLE %s DROP FOREIGN KEY '%s';", Payload::TABLENAME, 'path_id_path_constraint') . PHP_EOL;
+        // $queryForeign .= sprintf("DROP TABLE '%s';", Payload::TABLENAME) . PHP_EOL;
+        // $queryForeign .= 'END AS result;';
+
+        $querySafeGuard = <<<EOF
+        SET @constraint_name = 'path_id_path_constraint';
+        SET @check_constraint = (SELECT COUNT(*)
+                                 FROM information_schema.table_constraints
+                                 WHERE table_schema = DATABASE()
+                                   AND table_name = 'payloads'
+                                   AND constraint_name = @constraint_name);
+
+        SET @drop_table = DROP TABLE 'payloads';
+        
+        SET @sql = IF(@check_constraint > 0,
+                      CONCAT('ALTER TABLE payloads DROP FOREIGN KEY ', @constraint_name, drop_table),
+                      'SELECT 1');
+        
+        PREPARE stmt FROM @sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+EOF;
+
+        return $querySafeGuard;
     }
 
     private function getPayloadsCreationTableScript(): string
@@ -65,4 +98,10 @@ class PayloadsTable implements MigrationInterface
             ->setForeignTable(Path::TABLENAME)
             ->getScript();
     }
+
+    // private function payloadTableExists()
+    // {
+
+    // }
 }
+
