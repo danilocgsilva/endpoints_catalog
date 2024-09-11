@@ -8,6 +8,8 @@ use Danilocgsilva\EndpointsCatalog\Repositories\DnsRepository;
 use Danilocgsilva\EndpointsCatalog\Repositories\PathRepository;
 use Danilocgsilva\EndpointsCatalog\Migrations\MigrationInterface;
 use PDO;
+use Danilocgsilva\EndpointsCatalog\Migrations\Migrations\M01_Apply;
+use Danilocgsilva\EndpointsCatalog\Migrations\Migrations\M02_PlatformsPayload;
 
 class Utils
 {
@@ -49,7 +51,8 @@ class Utils
 
     public function cleanTable(string $tableName): void
     {
-        $query = sprintf("DELETE FROM %s; ALTER TABLE %s AUTO_INCREMENT = 1;", $tableName, $tableName);
+        $query = sprintf("DROP TABLE IF EXISTS %s;", $tableName);
+
         $this->pdo->prepare($query)->execute();
     }
 
@@ -93,5 +96,21 @@ class Utils
     public function getDnsRepository(): DnsRepository
     {
         return new DnsRepository($this->pdo);
+    }
+
+    public function dropTable(string $tableName)
+    {
+        $this->pdo->prepare("DROP TABLE IF EXISTS :table_name")->execute([':table_name' => $tableName]);
+    }
+
+    public function dropAllTables(): void
+    {
+        $m01Migrations = (new M02_PlatformsPayload())->getTablesNames();
+        $m02Migrations = (new M01_Apply())->getTablesNames();
+        $allTables = array_merge($m01Migrations, $m02Migrations);
+        array_reverse($allTables);
+        foreach ($allTables as $tableName) {
+            $this->dropTable($tableName);
+        }
     }
 }

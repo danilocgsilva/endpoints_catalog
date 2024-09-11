@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Repositories;
 
+use Danilocgsilva\EndpointsCatalog\Migrations\Migrations\FacadeComponents\PlatformsTable;
 use Danilocgsilva\EndpointsCatalog\Repositories\PlatformRepository;
 use Exception;
 use PHPUnit\Framework\TestCase;
@@ -43,6 +44,7 @@ class PlatformRepositoryTest extends TestCase
     {
         $platformName = "Business drive";
         $this->cleanTables();
+        $this->dbUtils->migrate(new PlatformsTable());
         
         $this->assertSame(0, $this->dbUtils->getTableCount('platforms'));
         

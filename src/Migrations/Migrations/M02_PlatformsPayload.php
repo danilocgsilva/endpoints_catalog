@@ -13,11 +13,22 @@ class M02_PlatformsPayload implements MigrationInterface
     private PlatformsTable $platformsTable;
 
     private PayloadsTable $payloadsTable;
+
+    private array $tables;
     
     public function __construct()
-    {
+    {   
         $this->platformsTable = new PlatformsTable();
         $this->payloadsTable = new PayloadsTable();
+
+        $this->tables = array_merge(
+            $this->platformsTable->getTablesNames(), $this->payloadsTable->getTablesNames()
+        );
+    }
+
+    public function getTablesNames(): array
+    {
+        return $this->tables;
     }
     
     public function getString(): string

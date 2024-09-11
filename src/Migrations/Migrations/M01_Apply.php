@@ -12,6 +12,17 @@ use Danilocgsilva\EndpointsCatalog\Migrations\MigrationInterface;
 
 class M01_Apply implements MigrationInterface
 {
+    private array $tables;
+    
+    public function __construct()
+    {
+        $this->tables = [
+            Path::TABLENAME,
+            Dns::TABLENAME,
+            DnsPath::TABLENAME
+        ];
+    }
+    
     public function getString(): string
     {
         $onScript = "";
@@ -26,16 +37,17 @@ class M01_Apply implements MigrationInterface
 
     public function getRollbackString(): string
     {
-        $rollbackString = sprintf("DROP TABLE %s;", DnsPath::TABLENAME) . PHP_EOL;
-        $rollbackString .= sprintf("DROP TABLE %s;", Dns::TABLENAME) . PHP_EOL;
-        $rollbackString .= sprintf("DROP TABLE %s;", Path::TABLENAME);
+        $dropTableQueries = [];
+        for ($i = count($this->tables) - 1; $i >= 0; $i--) {
+            $dropTableQueries = sprintf("DROP TABLE %s;", $this->tables[$i]);
+        }
 
-        return $rollbackString;
+        return implode(PHP_EOL, $dropTableQueries);
     }
 
     private function getPathsTableScript(): string
     {
-        $pathsTable = new TableScriptSpitter(Path::TABLENAME);
+        $pathsTable = new TableScriptSpitter($this->tables[0]);
         
         $pathsTable->addField(
             (new FieldScriptSpitter("id"))
@@ -54,9 +66,14 @@ class M01_Apply implements MigrationInterface
         return $pathsTable->getScript();
     }
 
+    public function getTablesNames(): array
+    {
+        return $this->tables;
+    }
+
     private function getDnsTableScript(): string
     {
-        $dnsTable = new TableScriptSpitter(Dns::TABLENAME);
+        $dnsTable = new TableScriptSpitter($this->tables[1]);
 
         $dnsTable->addField(
             (new FieldScriptSpitter("id"))
@@ -87,7 +104,7 @@ class M01_Apply implements MigrationInterface
 
     private function getDnsPathTableScript(): string
     {
-        $dnsTable = new TableScriptSpitter(DnsPath::TABLENAME);
+        $dnsTable = new TableScriptSpitter($this->tables[2]);
 
         $dnsTable->addField(
             (new FieldScriptSpitter("id"))

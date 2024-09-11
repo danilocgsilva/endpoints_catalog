@@ -14,6 +14,18 @@ use Danilocgsilva\EndpointsCatalog\Models\Dns;
 
 class PlatformsTable implements MigrationInterface
 {
+    private array $tables;
+
+    public function __construct()
+    {
+        $this->tables = [Platform::TABLENAME];
+    }
+    
+    public function getTablesNames(): array
+    {
+        return $this->tables;
+    }
+    
     public function getString(): string
     {
         $newPlatformTableString = $this->getNewTableString();
@@ -31,14 +43,14 @@ class PlatformsTable implements MigrationInterface
     {
         $removeForeignKeyScript = sprintf("ALTER TABLE %s DROP FOREIGN KEY %s;", Dns::TABLENAME, 'dns_platform_id_constraint');
         $removeNewColumn = sprintf("ALTER TABLE %s DROP %s;", Dns::TABLENAME, 'platform_id');
-        $removeTableScript = sprintf("DROP TABLE %s;", Platform::TABLENAME);
+        $removeTableScript = sprintf("DROP TABLE %s;", $this->tables[0]);
 
         return $removeForeignKeyScript . PHP_EOL . $removeNewColumn . PHP_EOL . $removeTableScript;
     }
     
     private function getNewTableString(): string
     {
-        return (new TableScriptSpitter(Platform::TABLENAME))
+        return (new TableScriptSpitter($this->tables[0]))
             ->addField(
                 (new FieldScriptSpitter('id'))
                     ->setPrimaryKey()
