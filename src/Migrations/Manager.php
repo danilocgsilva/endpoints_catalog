@@ -27,6 +27,9 @@ class Manager
     public function getNextMigration(): MigrationInterface
     {
         if ($this->haveNextMigration()) {
+            if (!$this->haveTablesFirstMigration()) {
+                return new M01_Apply();
+            }
             return new M02_PlatformsPayload();
         }
         throw new NoMigrationsLeftException();
@@ -39,8 +42,9 @@ class Manager
                 if (!in_array(Platform::TABLENAME, $this->tables)) {
                     $this->isHaveNextMigration = true;
                 }
+            } else {
+                $this->isHaveNextMigration = true;
             }
-            $this->isHaveNextMigration = false;
         }
         return $this->isHaveNextMigration;
     }

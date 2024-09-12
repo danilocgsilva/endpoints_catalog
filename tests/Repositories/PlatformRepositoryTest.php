@@ -27,16 +27,15 @@ class PlatformRepositoryTest extends TestCase
     {
         parent::__construct($name);
         $this->dbUtils = new Utils();
+    }
 
+    public function setUp(): void
+    {
         $migrationManager = new Manager($this->dbUtils->getDatabaseName(), $this->dbUtils->getPdo());
         if ($migrationManager->haveNextMigration()) {
             $migration = $migrationManager->getNextMigration();
             $this->dbUtils->migrate($migration);
         }
-    }
-
-    public function setUp(): void
-    {
         $this->platformRepository = new PlatformRepository($this->dbUtils->getPdo());
     }
 

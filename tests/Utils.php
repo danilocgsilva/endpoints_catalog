@@ -103,7 +103,13 @@ class Utils
         $this->pdo->prepare(sprintf("DROP TABLE IF EXISTS %s;", $tableName))->execute();
     }
 
-    public function dropAllTables(): void
+    public function dropAllForeignKeysAndTables(): void
+    {
+        $this->dropAllForeignKeys();
+        $this->dropAllTables();
+    }
+
+    private function dropAllTables(): void
     {
         $m01Migrations = (new M02_PlatformsPayload())->getTablesNames();
         $m02Migrations = (new M01_Apply())->getTablesNames();
@@ -111,6 +117,29 @@ class Utils
         array_reverse($allTables);
         foreach ($allTables as $tableName) {
             $this->dropTable($tableName);
+        } 
+    }
+
+    private function dropAllForeignKeys(): void
+    {
+        $query = <<<EOL
+SELECT 
+    CONSTRAINT_NAME,
+    TABLE_NAME
+FROM
+    INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+WHERE
+    REFERENCED_TABLE_SCHEMA = :database_name;
+EOL;
+        $preResults = $this->pdo->prepare($query);
+        $preResults->execute([':database_name' => $this->getDatabaseName()]);
+        $preResults->setFetchMode(PDO::FETCH_ASSOC);
+        while ($row = $preResults->fetch()) {
+            $constraintName = $row['CONSTRAINT_NAME'];
+            $table = $row['TABLE_NAME'];
+
+            $query = sprintf("ALTER TABLE %s DROP FOREIGN KEY %s;", $table, $constraintName);
+            $this->pdo->prepare($query)->execute();
         }
     }
 }

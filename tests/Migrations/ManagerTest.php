@@ -12,12 +12,30 @@ use Danilocgsilva\EndpointsCatalog\Migrations\Manager;
 
 class ManagerTest extends TestCase
 {
+    private Utils $utils;
+
+    private Manager $manager;
+    
+    public function __construct(string $name)
+    {
+        parent::__construct($name);
+        $this->utils = new Utils();
+        $this->manager = new Manager($this->utils->getDatabaseName(), $this->utils->getPdo());
+    }
+    
     public function testGetFirstMigration()
     {
-        $utils = new Utils();
-        $utils->dropAllTables();
-        $manager = new Manager($utils->getDatabaseName(), $utils->getPdo());
-        $nextMigration = $manager->getNextMigration();
+        $this->utils->dropAllForeignKeysAndTables();
+        $nextMigration = $this->manager->getNextMigration();
         $this->assertInstanceOf(M01_Apply::class, $nextMigration);
+    }
+
+    public function testGetSecondMigration(): void
+    {
+        $this->utils->dropAllForeignKeysAndTables();
+        $firstMigration = $this->manager->getNextMigration();
+        $this->utils->migrate($firstMigration);
+        $secondMigration = $this->manager->getNextMigration();
+        $this->assertInstanceOf(M02_PlatformsPayload::class, $secondMigration);
     }
 }
