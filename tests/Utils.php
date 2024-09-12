@@ -100,7 +100,7 @@ class Utils
 
     public function dropTable(string $tableName)
     {
-        $this->pdo->prepare("DROP TABLE IF EXISTS :table_name")->execute([':table_name' => $tableName]);
+        $this->pdo->prepare(sprintf("DROP TABLE IF EXISTS %s;", $tableName))->execute();
     }
 
     public function dropAllTables(): void
