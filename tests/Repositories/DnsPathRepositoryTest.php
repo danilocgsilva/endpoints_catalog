@@ -36,7 +36,6 @@ class DnsPathRepositoryTest extends TestCase
     public function testSave(): void
     {
         $this->cleanTables();
-        $this->dbUtils->migrate(new M01_Apply());
         $this->assertSame(0, $this->dbUtils->getTableCount('dns_path'));
         $this->fillDnsAndPathTables();
         
@@ -49,7 +48,6 @@ class DnsPathRepositoryTest extends TestCase
     public function testGet(): void
     {
         $this->cleanTables();
-        $this->dbUtils->migrate(new M01_Apply());
         $this->fillDnsAndPathTables();
 
         $this->assertSame(0, $this->dbUtils->getTableCount('dns_path'));
@@ -69,7 +67,6 @@ class DnsPathRepositoryTest extends TestCase
     public function testReplace(): void
     {
         $this->cleanTables();
-        $this->dbUtils->migrate(new M01_Apply());
         $this->fillDnsAndPathTables();
         $this->dbUtils->fillTable('dns', [
             ["dns" => "myowndns.com"]
@@ -93,7 +90,6 @@ class DnsPathRepositoryTest extends TestCase
     public function testDelete(): void
     {
         $this->cleanTables();
-        $this->dbUtils->migrate(new M01_Apply());
         $this->fillDnsAndPathTables();
 
         $this->dbUtils->fillTable('dns_path', [
@@ -110,8 +106,6 @@ class DnsPathRepositoryTest extends TestCase
 
     public function testList(): void
     {
-        $this->cleanTables();
-        $this->dbUtils->migrate(new M01_Apply());
         $this->fillDnsAndPathTables();
 
         $this->dbUtils->fillTable('dns', [
@@ -135,11 +129,11 @@ class DnsPathRepositoryTest extends TestCase
         $this->assertCount(2, $listOfDnsPath);
     }
 
-    public function testSaveEndpoint(): void
+    public function testEndpointSave(): void
     {
         $this->cleanTables();
-        $this->dbUtils->migrate(new M01_Apply());
         $this->fillDnsAndPathTables();
+
         $this->assertSame(0, $this->dbUtils->getTableCount('dns_path'));
 
         $this->dbUtils->getPathRepository()->saveAndAssingId(
@@ -156,11 +150,11 @@ class DnsPathRepositoryTest extends TestCase
         $this->assertSame(1, $this->dbUtils->getTableCount('dns_path'));
     }
 
-    private function cleanTables(): void
+    private function dropTables(): void
     {
-        $this->dbUtils->cleanTable('dns_path');
-        $this->dbUtils->cleanTable('dns');
-        $this->dbUtils->cleanTable('paths');
+        $this->dbUtils->dropTable('dns_path');
+        $this->dbUtils->dropTable('dns');
+        $this->dbUtils->dropTable('paths');
     }
 
     private function fillDnsAndPathTables(): void
@@ -171,5 +165,12 @@ class DnsPathRepositoryTest extends TestCase
         $this->dbUtils->fillTable('paths', [
             ["path" => "my/first"],
         ]);
+    }
+
+    private function cleanTables(): void
+    {
+        $this->dbUtils->cleanTable('dns_path');
+        $this->dbUtils->cleanTable('dns');
+        $this->dbUtils->cleanTable('paths');
     }
 }

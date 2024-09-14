@@ -51,9 +51,17 @@ class Utils
 
     public function cleanTable(string $tableName): void
     {
-        $query = sprintf("DROP TABLE IF EXISTS %s;", $tableName);
+        $queryBase = "DELETE FROM %s;";
+        $queryBase .= "ALTER TABLE %s AUTO_INCREMENT = 1;";
 
-        $this->pdo->prepare($query)->execute();
+        $this->pdo->prepare(
+            sprintf($queryBase, $tableName, $tableName)
+        )->execute();
+    }
+
+    public function dropTable(string $tableName)
+    {
+        $this->pdo->prepare(sprintf("DROP TABLE IF EXISTS %s;", $tableName))->execute();
     }
 
     public function fillTable(string $tableName, array $data): void
@@ -98,10 +106,7 @@ class Utils
         return new DnsRepository($this->pdo);
     }
 
-    public function dropTable(string $tableName)
-    {
-        $this->pdo->prepare(sprintf("DROP TABLE IF EXISTS %s;", $tableName))->execute();
-    }
+
 
     public function dropAllForeignKeysAndTables(): void
     {
