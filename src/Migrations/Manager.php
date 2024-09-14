@@ -41,6 +41,8 @@ class Manager
             if ($this->haveTablesFirstMigration()) {
                 if (!in_array(Platform::TABLENAME, $this->tables)) {
                     $this->isHaveNextMigration = true;
+                } else {
+                    $this->isHaveNextMigration = false;
                 }
             } else {
                 $this->isHaveNextMigration = true;
@@ -56,7 +58,7 @@ class Manager
     public function getPreviousMigration(): MigrationInterface
     {
         // Last migrations check must be checked first than the previous migrations check.
-        if (in_array(Platform::TABLENAME, $this->listTables())) {
+        if (in_array(Platform::TABLENAME, $this->tables)) {
             return new M02_PlatformsPayload();
         }
 
@@ -69,25 +71,20 @@ class Manager
 
     private function haveTablesFirstMigration(): bool
     {
-        /** @var array<string> */
-        $tables = $this->listTables();
+        $this->updateTableList();
         return
-            in_array(Path::TABLENAME, $tables) &&
-            in_array(Dns::TABLENAME, $tables) &&
-            in_array(DnsPath::TABLENAME, $tables);
+            in_array(Path::TABLENAME, $this->tables) &&
+            in_array(Dns::TABLENAME, $this->tables) &&
+            in_array(DnsPath::TABLENAME, $this->tables);
     }
 
     /**
      * @return array<string>
      */
-    private function listTables(): array
+    private function updateTableList(): void
     {
-        if (isset($this->tables)) {
-            return $this->tables;
-        }
-
-        $query = sprintf("USE %s;", $this->databaseName);
-        $this->pdo->prepare($query)->execute();
+        $queryUse = sprintf("USE %s;", $this->databaseName);
+        $this->pdo->prepare($queryUse)->execute();
 
         $query = "SHOW TABLES;";
         $preResults = $this->pdo->prepare($query);
@@ -97,7 +94,5 @@ class Manager
         while ($row = $preResults->fetch()) {
             $this->tables[] = $row[0];
         }
-
-        return $this->tables;
     }
 }

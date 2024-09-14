@@ -43,7 +43,6 @@ class PlatformRepositoryTest extends TestCase
     {
         $platformName = "Business drive";
         $this->cleanTables();
-        $this->dbUtils->migrate(new PlatformsTable());
         
         $this->assertSame(0, $this->dbUtils->getTableCount('platforms'));
         
