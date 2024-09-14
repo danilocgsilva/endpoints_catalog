@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Repositories;
 
+use Danilocgsilva\EndpointsCatalog\Migrations\Migrations\M01_Apply;
 use Danilocgsilva\EndpointsCatalog\Repositories\DnsPathRepository;
 use PHPUnit\Framework\TestCase;
 use Tests\Utils;
@@ -34,6 +35,8 @@ class DnsPathRepositoryTest extends TestCase
 
     public function testSave(): void
     {
+        $this->cleanTables();
+        $this->dbUtils->migrate(new M01_Apply());
         $this->assertSame(0, $this->dbUtils->getTableCount('dns_path'));
         $this->fillDnsAndPathTables();
         
@@ -46,6 +49,7 @@ class DnsPathRepositoryTest extends TestCase
     public function testGet(): void
     {
         $this->cleanTables();
+        $this->dbUtils->migrate(new M01_Apply());
         $this->fillDnsAndPathTables();
 
         $this->assertSame(0, $this->dbUtils->getTableCount('dns_path'));
@@ -65,6 +69,7 @@ class DnsPathRepositoryTest extends TestCase
     public function testReplace(): void
     {
         $this->cleanTables();
+        $this->dbUtils->migrate(new M01_Apply());
         $this->fillDnsAndPathTables();
         $this->dbUtils->fillTable('dns', [
             ["dns" => "myowndns.com"]
@@ -88,6 +93,7 @@ class DnsPathRepositoryTest extends TestCase
     public function testDelete(): void
     {
         $this->cleanTables();
+        $this->dbUtils->migrate(new M01_Apply());
         $this->fillDnsAndPathTables();
 
         $this->dbUtils->fillTable('dns_path', [
@@ -105,6 +111,7 @@ class DnsPathRepositoryTest extends TestCase
     public function testList(): void
     {
         $this->cleanTables();
+        $this->dbUtils->migrate(new M01_Apply());
         $this->fillDnsAndPathTables();
 
         $this->dbUtils->fillTable('dns', [
@@ -131,6 +138,7 @@ class DnsPathRepositoryTest extends TestCase
     public function testSaveEndpoint(): void
     {
         $this->cleanTables();
+        $this->dbUtils->migrate(new M01_Apply());
         $this->fillDnsAndPathTables();
         $this->assertSame(0, $this->dbUtils->getTableCount('dns_path'));
 
